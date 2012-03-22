@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.ylmf.ydm
+Exec=/usr/lib/ydevicemanager/daemon.py
+User=root

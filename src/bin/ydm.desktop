@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=ydevicemanager
+Name[zh_CN]=设备管理器
+Comment=View device information,and install the driver
+Comment[zh_CN]=查看设备信息以及安装驱动
+Exec=ydm
+Icon=ydm
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+StartupNotify=true
+Categories=GNOME;GTK;Settings;HardwareSettings;System
+

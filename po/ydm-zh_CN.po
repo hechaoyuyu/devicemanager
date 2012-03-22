@@ -1,0 +1,723 @@
+# Ylmf Device Manager(ydm).
+# Copyright (C) 2011 YLMF, Inc.
+# hechao <hechao@115.com>, 2011.
+
+msgid "Device Manager"
+msgstr "设备管理器"
+
+msgid "Download driver list failed!"
+msgstr "下载驱动列表失败！"
+
+msgid "Network connection error, check your network!"
+msgstr "检测到与驱动服务器连接失败，请检查您的网络！"
+
+msgid "Found a new device is added, you can re-test in order to obtain the latest hardware information."
+msgstr "发现有新的设备添加，您可以重新检测，以便得到最新的硬件信息。"
+
+msgid "Found that the device is removed, you can re-test in order to get the change information after of the hardware."
+msgstr "发现有设备被移除，您可以重新检测，以便得到变更后的硬件信息。"
+
+msgid "File checksum error!"
+msgstr "文件校验错误！"
+
+msgid "There are new or updated drivers available for your hardware:\nDriver name:\t%s\nDriver packages:%s\nVersion number:\t%s\nDescription:\t%s"
+msgstr "您的硬件有新的或者可升级的驱动:\n驱动名:\t%s\n驱动包:\t%s\n版本号:\t%s\n描述:\t%s"
+
+msgid "Do you want to update or install the driver(Y/N):"
+msgstr "您是否要更新或安装此驱动(Y/N)："
+
+msgid "Has detected that you have <span color='red' font_desc='10'>%s</span> hardware can be upgraded or installed driver!"
+msgstr "<span foreground='#000000' font_desc='10'>检测到你有</span><span color='red' font_desc='10'>%s</span><span foreground='#000000' font_desc='10'>款硬件可以升级或安装驱动！</span>"
+
+msgid "install"
+msgstr "安装"
+
+msgid "uninstall"
+msgstr "卸载"
+
+msgid "update"
+msgstr "升级"
+
+msgid "ainstall"
+msgstr "已安装"
+
+msgid "Input error, please re-enter(Y/N):"
+msgstr "输入有误，请重新输入(Y/N):"
+
+msgid "Install failed：%s"
+msgstr "安装失败：%s"
+
+msgid "Identification of permissions failed!"
+msgstr "鉴定权限失败！"
+
+msgid "No proprietary drivers are in use on this system."
+msgstr "您系统中没有驱动可升级或安装！"
+
+msgid "Download address: %s"
+msgstr "下载地址：%s"
+
+msgid "Exit status：%d"
+msgstr "退出状态：%d"
+
+msgid "New sha1 value：%s"
+msgstr "新sha1值是：%s"
+
+msgid "Old sha1 value：%s"
+msgstr "原sha值是：%s"
+
+msgid "Download the file in question"
+msgstr "下载的文件有问题"
+
+msgid "ydm terminal"
+msgstr "ydm 终端"
+
+msgid "Command failed. Please close this window."
+msgstr "命令失败。请关闭这个窗口。"
+
+msgid "Command succeed. Please close this window."
+msgstr "安装驱动成功。请关闭这个窗口。"
+
+msgid "Run command:"
+msgstr "运行命令："
+
+msgid "%s not find. Please close this window."
+msgstr "%s 命令不存在。请关闭这个窗口。"
+
+msgid "Loading:"
+msgstr "正在加载："
+
+msgid "Loading Finished"
+msgstr "加载完成"
+
+msgid "Initialization ..."
+msgstr "初始化 ..."
+
+msgid "Loading, please wait ..."
+msgstr "加载中，请稍候 ..."
+
+msgid "Developing, please wait ..."
+msgstr "开发中，敬请期待 ..."
+
+msgid "Retry"
+msgstr "重试"
+
+msgid "DetectOn"
+msgstr "硬件检测"
+
+msgid "DriveOn"
+msgstr "驱动安装"
+
+msgid "Reviews"
+msgstr "硬件评测"
+
+msgid "Date of last detection: "
+msgstr "最后一次检测日期是："
+
+msgid "Generate reports"
+msgstr "生成报告"
+
+msgid "Save screenshot"
+msgstr "保存截图"
+
+msgid "Save report"
+msgstr "保存报告"
+
+msgid "Re-tested"
+msgstr "重新检测"
+
+msgid "Hardware Brand"
+msgstr "硬件品牌"
+
+msgid "Intel"
+msgstr "英特尔"
+
+msgid "Vimicro"
+msgstr "中芯微"
+
+msgid "Nvidia"
+msgstr "英伟达"
+
+msgid "VIA"
+msgstr "威盛"
+
+msgid "AUO"
+msgstr "友达"
+
+msgid "AOC"
+msgstr "冠捷"
+
+msgid "Hasee"
+msgstr "神舟电脑"
+
+msgid "Founder"
+msgstr "方正电脑"
+
+msgid "Tongfang"
+msgstr "清华同方"
+
+msgid "Acer"
+msgstr "宏碁"
+
+msgid "Lenovo"
+msgstr "联想"
+
+msgid "ASUS"
+msgstr "华硕"
+
+msgid "HP"
+msgstr "惠普"
+
+msgid "SAMSUNG"
+msgstr "三星"
+
+msgid "TOSHIBA"
+msgstr "东芝"
+
+msgid "Apple"
+msgstr "苹果"
+
+msgid "DELL"
+msgstr "戴尔"
+
+msgid "FUJITSU"
+msgstr "富士通"
+
+msgid "SONY"
+msgstr "索尼"
+
+msgid "Atheros"
+msgstr "高通"
+
+msgid "Broadcom"
+msgstr "博通"
+
+msgid "Ralink"
+msgstr "雷凌"
+
+msgid "Excelstor"
+msgstr "易拓"
+
+msgid "Hitachi"
+msgstr "日立"
+
+msgid "TSSTcorp"
+msgstr "东芝三星"
+
+msgid "Maxtor"
+msgstr "希捷"
+
+msgid "Western Digital"
+msgstr "西数"
+
+msgid "Liteon"
+msgstr "Liteon"
+
+msgid "Seagate"
+msgstr "希捷"
+
+msgid "Quantum"
+msgstr "昆腾"
+
+msgid "PLDS"
+msgstr "飞利浦建兴"
+
+msgid "Philips"
+msgstr "飞利浦"
+
+msgid "Pioneer"
+msgstr "先锋"
+
+msgid "Realtek"
+msgstr "瑞昱"
+
+msgid "Creative"
+msgstr "创新科技"
+
+msgid "Sonix"
+msgstr "松翰"
+
+msgid "Etron"
+msgstr "钰创科技"
+
+msgid "Chicony"
+msgstr "群光"
+
+msgid "Logitech"
+msgstr "罗技"
+
+msgid "Microsoft"
+msgstr "微软"
+
+msgid "Primax"
+msgstr "致伸科技"
+
+msgid "Pixart"
+msgstr "原相科技"
+
+msgid "Sunplus"
+msgstr "凌阳"
+
+msgid "Gigabyte"
+msgstr "技嘉"
+
+msgid "Biostar"
+msgstr "映泰"
+
+msgid "Yeston"
+msgstr "盈通"
+
+msgid "Colorful"
+msgstr "七彩红"
+
+msgid "Kingston"
+msgstr "金士顿"
+
+msgid "Kingmax"
+msgstr "胜创"
+
+msgid "Hynix"
+msgstr "海力士"
+
+msgid "Micron"
+msgstr "美光"
+
+msgid "Asint"
+msgstr "昱联科技"
+
+msgid "ADATA"
+msgstr "威刚"
+
+msgid "ZTE"
+msgstr "中兴"
+
+msgid "Texas Instruments"
+msgstr "德州仪器"
+
+msgid "SMP"
+msgstr "新普科技"
+
+msgid "AMI"
+msgstr "安迈"
+
+msgid "Phoenix"
+msgstr "凤凰"
+
+msgid "Computer preview"
+msgstr "电脑预览"
+
+msgid "system"
+msgstr "电脑预览"
+
+msgid "Basic Info"
+msgstr "基本信息"
+
+msgid "CDescription"
+msgstr "电脑描述"
+
+msgid "CProduct"
+msgstr "电脑型号"
+
+msgid "Description"
+msgstr "描述"
+
+msgid "Product"
+msgstr "产品型号"
+
+msgid "Vendor"
+msgstr "制造商"
+
+msgid "Serial"
+msgstr "序列号"
+
+msgid "UUID"
+msgstr "唯一识别码"
+
+msgid "System Info"
+msgstr "系统信息"
+
+msgid "System Memory"
+msgstr "系统内存"
+
+msgid "Hostname"
+msgstr "主机名"
+
+msgid "Username"
+msgstr "当前用户"
+
+msgid "day"
+msgstr "天"
+
+msgid "hour"
+msgstr "小时"
+
+msgid "minute"
+msgstr "分钟"
+
+msgid "Runtime"
+msgstr "持续运行"
+
+msgid "Install time"
+msgstr "安装时间"
+
+msgid "System version"
+msgstr "系统版本"
+
+msgid "Kernel version"
+msgstr "内核版本"
+
+msgid "Kernel arch"
+msgstr "内核架构"
+
+msgid "Xorg version"
+msgstr "Xorg版本"
+
+msgid "OpenGL Info"
+msgstr "OpenGL信息"
+
+msgid "Rendering"
+msgstr "硬件渲染"
+
+msgid "OpenGL renderer"
+msgstr "OpenGL渲染器"
+
+msgid "OpenGL version"
+msgstr "OpenGL版本"
+
+msgid "motherboard"
+msgstr "主板"
+
+msgid "Info"
+msgstr "信息"
+
+msgid "MProduct"
+msgstr "主板型号"
+
+msgid "MVendor"
+msgstr "主板产商"
+
+msgid "BVendor"
+msgstr "BIOS产商"
+
+msgid "BVersion"
+msgstr "BIOS版本"
+
+msgid "Version"
+msgstr "版本"
+
+msgid "bit"
+msgstr "位"
+
+msgid "Date"
+msgstr "发布日期"
+
+msgid "BCapability"
+msgstr "BIOS特征"
+
+msgid "cpu"
+msgstr "处理器"
+
+msgid "Current temperature:"
+msgstr "当前温度："
+
+msgid "Max Hz"
+msgstr "最大主频"
+
+msgid "Current Hz"
+msgstr "当前主频"
+
+msgid "FSB"
+msgstr "前端总线"
+
+msgid "Core Info"
+msgstr "内核信息"
+
+msgid "Core Num"
+msgstr "核心数目" 
+
+msgid "core"
+msgstr "核"
+
+msgid "thread"
+msgstr "线程"
+
+msgid "Width"
+msgstr "数据宽度"
+
+msgid "Slot"
+msgstr "插座/插槽"
+
+msgid "Order"
+msgstr "指令集"
+
+msgid "Cache Info"
+msgstr "缓存信息"
+
+msgid "L1 cache"
+msgstr "一级缓存"
+
+msgid "L2 cache"
+msgstr "二级缓存"
+
+msgid "L3 cache"
+msgstr "三级缓存"
+
+msgid "L4 cache"
+msgstr "四级缓存"
+
+msgid "memory"
+msgstr "内存"
+
+msgid "MDescription"
+msgstr "内存描述"
+
+msgid "Size"
+msgstr "总大小"
+
+msgid "Physical Memory"
+msgstr "物理内存"
+
+msgid "Memory product"
+msgstr "内存型号"
+
+msgid "Memory size"
+msgstr "内存大小"
+
+msgid "display"
+msgstr "显卡"
+
+msgid "Graphics card"
+msgstr "独立显卡"
+
+msgid "Integrated graphics"
+msgstr "集成显卡"
+
+msgid "Display card"
+msgstr "显卡芯片"
+
+msgid "Bus addr"
+msgstr "总线地址"
+
+msgid "Expand Info"
+msgstr "拓展信息"
+
+msgid "Firmware"
+msgstr "固件版本"
+
+msgid "Display driver"
+msgstr "显卡驱动"
+
+msgid "Display cap"
+msgstr "显卡特征"
+
+msgid "monitor"
+msgstr "显示器"
+
+msgid "Name"
+msgstr "产品名称"
+
+msgid "Make time"
+msgstr "生产日期"
+
+msgid "%s year num %s week"
+msgstr "%s年第%s周"
+
+msgid "Dimension"
+msgstr "屏幕尺寸"
+
+msgid "Current resolution"
+msgstr "当前分辨率"
+
+msgid "Max resolution"
+msgstr "最大分辨率"
+
+msgid "Gamma"
+msgstr "伽马值"
+
+msgid "Current output"
+msgstr "当前接口"
+
+msgid "Support output"
+msgstr "支持接口"
+
+msgid "Current chip"
+msgstr "当前显卡"
+
+msgid "modem"
+msgstr "调制解调器"
+
+msgid "Driver"
+msgstr "驱动"
+
+msgid "Empty"
+msgstr "空"
+
+msgid "multimedia"
+msgstr "多媒体"
+
+msgid "Video"
+msgstr "摄像头"
+
+msgid "Audio device"
+msgstr "音频设备"
+
+msgid "Multimedia audio controller"
+msgstr "多媒体音频控制器"
+
+msgid "Max power"
+msgstr "最大电流"
+
+msgid "Speed"
+msgstr "传输速率"
+
+msgid "network"
+msgstr "网卡"
+
+msgid "Network name"
+msgstr "网卡名称"
+
+msgid "Network cap"
+msgstr "网卡特征"
+
+msgid "Network driver"
+msgstr "网卡驱动"
+
+msgid "Logicalname"
+msgstr "设备名称"
+
+msgid "MAC addr"
+msgstr "MAC地址"
+
+msgid "Max width"
+msgstr "最大带宽"
+
+msgid "Driver ver"
+msgstr "驱动版本"
+
+msgid "IP addr"
+msgstr "IP地址"
+
+msgid "Link"
+msgstr "连接状态"
+
+msgid "Wireless spec"
+msgstr "无线规格"
+
+msgid "disk"
+msgstr "硬盘"
+
+msgid "ATA Disk"
+msgstr "ATA硬盘"
+
+msgid "SCSI Disk"
+msgstr "SCSI硬盘"
+
+msgid "Capacity"
+msgstr "容量"
+
+msgid "DCapacity"
+msgstr "硬盘大小"
+
+msgid "DProduct"
+msgstr "硬盘型号"
+
+msgid "Rotate speed"
+msgstr "硬盘转速"
+
+msgid "S.M.A.R.T"
+msgstr "S.M.A.R.T信息"
+
+msgid "Last time"
+msgstr "最近加电时间"
+
+msgid "Use"
+msgstr "使用情况"
+
+msgid "Sum use %s,total %s"
+msgstr "共使用%s次，累计%s"
+
+msgid "Err sector num"
+msgstr "损坏扇区数"
+
+msgid "Disk status"
+msgstr "硬盘状态"
+
+msgid "Good"
+msgstr "良好"
+
+msgid "Disk reports many bad sectors"
+msgstr "<span color='red'>硬盘上有很多坏扇区</span>"
+
+msgid "storage"
+msgstr "存储器"
+
+msgid "Mass storage device"
+msgstr "大容量存储设备"
+
+msgid "Mass storage controller"
+msgstr "大容量存储控制器"
+
+msgid "SATA controller"
+msgstr "SATA控制器"
+
+msgid "RAID bus controller"
+msgstr "RAID总线控制器"
+
+msgid "IDE interface"
+msgstr "IDE接口" 
+
+msgid "Capability"
+msgstr "产品特征"
+
+msgid "cdrom"
+msgstr "光驱"
+
+msgid "Dev status"
+msgstr "设备状态"
+
+msgid "nodisc"
+msgstr "没有光盘"
+
+msgid "busy"
+msgstr "设备正忙"
+
+msgid "open"
+msgstr "已经打开"
+
+msgid "ready"
+msgstr "准备就绪"
+
+msgid "Cdrom name"
+msgstr "光驱名称"
+
+msgid "Cdrom cap"
+msgstr "光驱特征"
+
+msgid "Wireless"
+msgstr "无线网卡"
+
+msgid "Ethernet"
+msgstr "有线网卡"
+
+msgid "input"
+msgstr "输入设备"
+
+msgid "Mouse"
+msgstr "鼠标"
+
+msgid "Human interface device"
+msgstr "人机接口设备"
+
+msgid "Keyboard"
+msgstr "键盘"
+
+msgid "generic"
+msgstr "其它设备"
+
+msgid "battery"
+msgstr "电池"
+
+msgid "Bcapacity"
+msgstr "电池能量"
+
+msgid "voltage"
+msgstr "电池电压"
