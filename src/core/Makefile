@@ -4,7 +4,9 @@ CXX = c++
 STRIP = strip
 CXXFLAGS ?= -O3 -Wall
 
-INCLUDES = `pkg-config --cflags python dbus-1`
+PYTHON_INC = $(shell python -c 'from distutils.sysconfig import get_python_inc;print get_python_inc()')
+#INCLUDES = `pkg-config --cflags python dbus-1`
+INCLUDES=-I$(PYTHON_INC) `pkg-config --cflags dbus-1`
 LIBS = -lboost_python -llshw -lsensors -ldbus-1
 
 SITE = $(shell python -c 'from distutils.sysconfig import get_python_lib;print get_python_lib()')
