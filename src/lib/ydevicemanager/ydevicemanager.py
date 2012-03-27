@@ -51,6 +51,7 @@ class DeviceManger(BaseFucn):
         call_signal(self.status_changed)
 
         self.pcid = {}
+        self.lock = False
         self.has_tap = None
         self.mainbox = gtk.VBox()
 
@@ -118,6 +119,7 @@ class DeviceManger(BaseFucn):
 
     def select_page(self, pageid):
         self.clean_widget(pageid)
+        self.pageid = pageid
 
         def driver_page(*arg):
             self.clean_widget(pageid)
@@ -143,6 +145,8 @@ class DeviceManger(BaseFucn):
 
         elif pageid == TEST_ID:
             self.framebox.add(self.load_wait(self, "Developing, please wait ..."))
+
+        self.has_tap = None
 
     def clean_widget(self, pageid):
         self.framebox.foreach(lambda widget: self.framebox.remove(widget))

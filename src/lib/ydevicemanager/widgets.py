@@ -172,7 +172,7 @@ class BaseFucn:
 
     def expose_tool(self, widget, event, txt, iconpath, h_pixbuf, p_pixbuf, pageid, get_pageid):
 
-	icon_pixbuf = gtk.gdk.pixbuf_new_from_file(iconpath)
+	icon = gtk.gdk.pixbuf_new_from_file(iconpath)
         id = get_pageid()
 
 	if widget.state == gtk.STATE_NORMAL:
@@ -196,9 +196,9 @@ class BaseFucn:
 	    cr.set_source_pixbuf(pixbuf, x, y)
 	    cr.paint()
 
-	w_icon, h_icon = icon_pixbuf.get_width(), icon_pixbuf.get_height()
+	w_icon, h_icon = icon.get_width(), icon.get_height()
 
-	cr.set_source_pixbuf(icon_pixbuf, x + (w_bg - w_icon) / 2, y + (h_bg - h_icon) / 2 - 10)
+	cr.set_source_pixbuf(icon, x + (w_bg - w_icon) / 2, y + (h_bg - h_icon) / 2 - 10)
 	cr.paint()
 
 	font_size = 14
@@ -274,34 +274,6 @@ class BaseFucn:
 		     int(color[4:], 16))
 	return (r / 255.0, g / 255.0, b / 255.0)
 
-    def expose_toggle(self, widget, event, n_pixbuf, h_pixbuf, p_pixbuf, get_hasmax, flag):
-
-	has_max = get_hasmax()
-
-	if not has_max and flag:
-	    n_pixbuf = gtk.gdk.pixbuf_new_from_file(ICON + "max_nn.png")
-	    h_pixbuf = gtk.gdk.pixbuf_new_from_file(ICON + "max_hh.png")
-	    p_pixbuf = gtk.gdk.pixbuf_new_from_file(ICON + "max_pp.png")
-
-	if widget.state == gtk.STATE_NORMAL:
-	    pixbuf = n_pixbuf
-	elif widget.state == gtk.STATE_PRELIGHT:
-	    pixbuf = h_pixbuf
-	elif widget.state == gtk.STATE_ACTIVE:
-	    pixbuf = p_pixbuf
-
-	w, h = widget.allocation.width, widget.allocation.height
-	x, y = widget.allocation.x, widget.allocation.y
-
-	cr = widget.window.cairo_create()
-	cr.set_source_pixbuf(pixbuf.scale_simple(w, h, gtk.gdk.INTERP_BILINEAR), x, y)
-        cr.paint()
-
-	if widget.get_child() != None:
-	    widget.propagate_expose(widget.get_child(), event)
-
-	return True
-
     def expose_button(self, widget, event, n_pixbuf, h_pixbuf, p_pixbuf):
 
         if widget.state == gtk.STATE_NORMAL:
@@ -310,7 +282,9 @@ class BaseFucn:
             pixbuf = h_pixbuf
 	elif widget.state == gtk.STATE_ACTIVE:
 	    pixbuf = p_pixbuf
-
+        #if widget.has_focus():
+        #    pixbuf = h_pixbuf
+        
 	cr = widget.window.cairo_create()
 
 	x, y = widget.allocation.x, widget.allocation.y
@@ -340,13 +314,26 @@ class BaseFucn:
     def leave_notify(self, widget, event):
 	widget.window.set_cursor(None)
 
+    def active_zone(self, widget):
+
+	mouse = widget.get_pointer()
+        x = 0
+        y = 0
+        w = x + widget.get_allocation().width
+        h = y + widget.get_allocation().height
+
+        if mouse[0] > x and mouse[0] < w and mouse[1] > y and mouse[1] < h:
+	    return True
+	else:
+	    return False
+
     def default_button(self):
 
         button = gtk.Button()
         button.set_size_request(80, 30)
-        button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFFF"))
-        button.modify_bg(gtk.STATE_PRELIGHT, gtk.gdk.color_parse("#EAF4FE"))
-        button.modify_bg(gtk.STATE_ACTIVE, gtk.gdk.color_parse("#EAF4EF"))
+        button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#E9F5DF"))
+        button.modify_bg(gtk.STATE_PRELIGHT, gtk.gdk.color_parse("#E5F3D6"))
+        button.modify_bg(gtk.STATE_ACTIVE, gtk.gdk.color_parse("#E7f4DB"))
 
         return button
 
@@ -376,14 +363,27 @@ class BaseFucn:
 
         ebox.connect("enter_notify_event", self.enter_ebox)
         ebox.connect("leave_notify_event", self.leave_ebox)
-
         return ebox
+
+    def set_eventbox(self, ebox):
+
+        ebox.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFFF"))
+        ebox.connect("enter_notify_event", self.enter_ebox)
+        ebox.connect("leave_notify_event", self.leave_ebox)
 
     def enter_ebox(self, widget, event):
         widget.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#F5F8FA"))
 
     def leave_ebox(self, widget, event):
         widget.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFFF"))
+
+    def set_pixbuf(self, n, h, p):
+
+        n_pixbuf = gtk.gdk.pixbuf_new_from_file(n)
+        h_pixbuf = gtk.gdk.pixbuf_new_from_file(h)
+        p_pixbuf = gtk.gdk.pixbuf_new_from_file(p)
+
+        return n_pixbuf, h_pixbuf, p_pixbuf
 
 
 class ToolBar(gtk.EventBox, BaseFucn):
@@ -403,7 +403,7 @@ class ToolBar(gtk.EventBox, BaseFucn):
         bar_box.pack_start(toggle_button, False)
 
         # toolbutton
-        self.tool_button = ToolButton(self.base.select_page)
+        self.tool_button = ToolButton(ydmg)
         bar_box.pack_start(self.tool_button, False)
 
         self.add(bar_box)
@@ -439,11 +439,12 @@ class ToolBar(gtk.EventBox, BaseFucn):
 
 class ToolButton(gtk.HBox, BaseFucn):
 
-    def __init__(self, callback):
+    def __init__(self, ydmg):
 	gtk.HBox.__init__(self)
 
+        self.base = ydmg
 	self.pageid = DEV_ID
-        self.callback = callback
+        self.callback = ydmg.select_page
 
 	'''symbol'''
         try:
@@ -470,17 +471,20 @@ class ToolButton(gtk.HBox, BaseFucn):
 
     def draw_button(self, txt, iconpath, pageid):
 
-	button = gtk.Button()
-	button.connect("pressed", self.select_page, pageid)
 	h_pixbuf = gtk.gdk.pixbuf_new_from_file(ICON + "main_h.png")
 	p_pixbuf = gtk.gdk.pixbuf_new_from_file(ICON + "main_p.png")
 
+        button = gtk.Button()
 	button.set_size_request(h_pixbuf.get_width(), h_pixbuf.get_height())
+
+        button.connect("pressed", self.select_page, pageid)
 	button.connect("expose_event", self.expose_tool, txt, iconpath, h_pixbuf, p_pixbuf, pageid, self.get_pageid)
 
 	return button
 
     def select_page(self, widget, pageid):
+        if self.base.lock:
+            return True
     	self.callback(pageid)
 
     def get_pageid(self):
@@ -509,16 +513,17 @@ class ToggleButton(gtk.VBox, BaseFucn):
 
     def draw_button(self, n_bg, h_bg, p_bg, callback, flag=None):
 
-        n_pixbuf = gtk.gdk.pixbuf_new_from_file(n_bg)
-	h_pixbuf = gtk.gdk.pixbuf_new_from_file(h_bg)
-	p_pixbuf = gtk.gdk.pixbuf_new_from_file(p_bg)
+        has_max = self.get_hasmax()
+        if not has_max and flag:
+            n_pixbuf, h_pixbuf, p_pixbuf = self.set_pixbuf(ICON + "max_nn.png", ICON + "max_hh.png", ICON + "max_pp.png")
+        else:
+            n_pixbuf, h_pixbuf, p_pixbuf = self.set_pixbuf(n_bg, h_bg, p_bg)
 
         button = gtk.Button()
         button.set_size_request(n_pixbuf.get_width(), n_pixbuf.get_height())
 
         button.connect("clicked", callback)
-	button.connect("expose_event", self.expose_toggle, n_pixbuf, h_pixbuf, p_pixbuf, self.get_hasmax, flag)
-
+	button.connect("expose_event", self.expose_button, n_pixbuf, h_pixbuf, p_pixbuf)
         return button
 
 class StatusBar(gtk.EventBox, BaseFucn):

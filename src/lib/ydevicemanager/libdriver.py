@@ -21,7 +21,7 @@ def _(s):
     return gettext.gettext(s)
 
 
-class DriverThread(Thread, gobject.GObject):
+class DriverThread(Thread, gobject.GObject, BaseFucn):
     __gsignals__ = {
         'load-wait': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
     }
@@ -31,12 +31,13 @@ class DriverThread(Thread, gobject.GObject):
         gobject.GObject.__init__(self)
 
         self.setDaemon(True)
+        ydmg.lock = True
         self.base = ydmg
 
     def run(self):
-
         self.base.driver_page = DriverPage(self.base)
         self.emit('load-wait')
+        self.base.lock = False
 
 
 class DriverPage(gtk.VBox):
@@ -44,7 +45,7 @@ class DriverPage(gtk.VBox):
     def __init__(self, base):
         gtk.VBox.__init__(self)
         base.device_thread.join()
-
+        
         drivers = Driver()
         if drivers.status:
             #Error
@@ -54,8 +55,8 @@ class DriverPage(gtk.VBox):
             drivers.get_drivers()
             dri_list = drivers.dri_list
             
-            #Prompt box
-            tipbar = DriverBar(dri_list)
+            #Tip box
+            tipbar = DriverBar(dri_list, base)
             self.pack_start(tipbar, False)
 
             #content view
@@ -81,7 +82,7 @@ class WarnPage(gtk.EventBox, BaseFucn):
         tip_box.pack_start(icon, False)
 
         label = gtk.Label()
-        label.set_markup("<span foreground='#000000' font_desc='10'>%s</span>" % _(output))
+        label.set_markup("<span font_desc='10'>%s</span>" % _(output))
         tip_box.pack_start(label, False, False, 6)
         warn_box.pack_start(tip_box, False, False, 10)
 
@@ -89,27 +90,18 @@ class WarnPage(gtk.EventBox, BaseFucn):
         align = self.define_align(button, 0.5, 0.5)
         warn_box.pack_start(align, False, False)
 
-    def align_box(self, widget):
-
-        align = gtk.Alignment()
-        align.set(0.5, 0.5, 0.0, 0.0)
-        align.add(widget)
-
-        return align
-
     def draw_button(self):
-
-        button = gtk.Button()
+ 
         label = gtk.Label()
         label.set_markup("<span font_desc='10'>%s</span>" % _("Retry"))
-        button.add(label)
-        button.connect("clicked", self.on_click)
 
-        n_pixbuf = gtk.gdk.pixbuf_new_from_file(ICON + "retry_n.png")
-        h_pixbuf = gtk.gdk.pixbuf_new_from_file(ICON + "retry_h.png")
-        p_pixbuf = gtk.gdk.pixbuf_new_from_file(ICON + "retry_p.png")
+        button = gtk.Button()
+        button.add(label)
+        
+        n_pixbuf, h_pixbuf, p_pixbuf = self.set_pixbuf(ICON + "retry_n.png", ICON + "retry_h.png", ICON + "retry_p.png")
         button.set_size_request(n_pixbuf.get_width(), n_pixbuf.get_height())
 
+        button.connect("clicked", self.on_click)
 	button.connect("expose_event", self.expose_button, n_pixbuf, h_pixbuf, p_pixbuf)
 
         return button
@@ -125,21 +117,72 @@ class WarnPage(gtk.EventBox, BaseFucn):
 
 class DriverBar(gtk.EventBox, BaseFucn):
 
-    def __init__(self, dri_list):
+    def __init__(self, dri_list, base):
 	gtk.EventBox.__init__(self)
 	self.connect("expose_event", self.expose_ebox, ICON + "tip.png")
+        self.base = base
 
 	bar_box = gtk.HBox()
         align = self.define_align(bar_box, 0.5, 0.5, 1.0, 1.0)
         align.set_padding(0, 0, 10, 10)
         self.add(align)
+        
 	tip_label = gtk.Label()
-        tip_label.set_markup(_("Has detected that you have <span color='red' font_desc='10'>%s</span> hardware can be upgraded or installed driver!") % len(dri_list))
-
+        if len(dri_list) == 0:
+            tip_label.set_markup("<span font_desc='10'>%s</span>" % _("You have installed the hardware required for driver!"))
+        else:
+            tip_label.set_markup(_("Has detected that you have <span color='red' font_desc='10'>%s</span> hardware can be upgraded or installed driver!") % len(dri_list))
 	bar_box.pack_start(tip_label, False, False)
 
+        rescan = self.re_scanned("SCAN")
+        bar_box.pack_start(rescan, False, False, 20)
 
-class DriverContent(gtk.ScrolledWindow):
+        '''Save screenshot'''
+        screenshot = self.save_scrot(ICON + "scrot.png", _("Save screenshot"), "SCROT")
+        bar_box.pack_end(screenshot, False, False)
+
+    def re_scanned(self, has_tap):
+
+        button = self.ebox_button()
+        button.connect('button-release-event', self.on_click, has_tap)
+
+        label = gtk.Label()
+        label.set_markup("<span foreground='#0092CE' font_desc='10'>%s</span>" % _("Re-scanned"))
+
+        button.add(label)
+        return button
+
+    def save_scrot(self, iconpath, txt, has_tap):
+
+        button = self.ebox_button()
+        button.connect('button-release-event', self.on_click, has_tap)
+
+	icon = gtk.image_new_from_file(iconpath)
+	label = gtk.Label()
+	label.set_markup("<span font_desc='10'>%s</span>" % txt)
+
+        box = gtk.HBox()
+        box.pack_start(icon, False, False)
+	box.pack_start(label, False, False, 4)
+        button.add(box)
+
+        return button
+
+    def on_click(self, widget, event, has_tap):
+        if not self.active_zone(widget):
+            return True
+
+        if has_tap == "SCROT":
+            os.system("gnome-screenshot -w")
+        elif has_tap == "SCAN":
+            self.base.framebox.foreach(lambda widget: self.base.framebox.remove(widget))
+            driver_thread = DriverThread(self.base)
+            driver_thread.start()
+
+            self.base.has_tap = "RETRY"
+            self.base.select_page(DRI_ID)
+
+class DriverContent(gtk.ScrolledWindow, BaseFucn):
 
     def __init__(self, dri_list, base):
         gtk.ScrolledWindow.__init__(self)
@@ -147,11 +190,15 @@ class DriverContent(gtk.ScrolledWindow):
 	self.set_shadow_type(gtk.SHADOW_NONE)
 
         vbox = gtk.VBox()
+        if len(dri_list) == 0:
+            overpage = self.over_page()
+            vbox.pack_start(overpage)
+
         for key in dri_list.keys():
             for dri_tuple in dri_list[key]:
                 id = base.pcid.get(key)
                 if id:
-                    dri_item = DriverItem(id, dri_tuple).item
+                    dri_item = DriverItem(id, dri_tuple)
                     vbox.pack_start(dri_item, False, False)
                     separator = gtk.HSeparator()
                     vbox.pack_start(separator, False, False)
@@ -160,11 +207,35 @@ class DriverContent(gtk.ScrolledWindow):
 	self.get_children()[0].modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFFF"))
         self.show_all()
 
+    def over_page(self):
 
-class DriverItem(BaseFucn):
+        tip_box = gtk.HBox()
+        icon = gtk.image_new_from_file(ICON + "over.png")
+        tip_box.pack_start(icon, False)
+
+        vbox = gtk.VBox(False, 4)
+        tip_box.pack_start(vbox, False, False, 6)
+
+        top_label = gtk.Label()
+        top_label.set_alignment(0, 0)
+        top_label.set_markup("<span font_desc='11'><b>%s</b></span>" % _("No need to install hardware device drivers!"))
+        vbox.pack_start(top_label, False)
+
+        bot_label = gtk.Label()
+        bot_label.set_alignment(0, 0)
+        bot_label.set_markup("<span font_desc='10'>%s</span>" % _("If you recently added hardware, please click 'Rescan'!"))
+        vbox.pack_start(bot_label, False)
+
+        align = self.define_align(tip_box, 0.5, 0.5)
+        return align
+
+class DriverItem(gtk.EventBox, BaseFucn):
 
     def __init__(self, icon_type, dri_tuple):
+        gtk.EventBox.__init__(self)
+        self.set_eventbox(self)
 
+        '''icons'''
         if icon_type == "display":
             icon = gtk.image_new_from_file(ICON + "card.png")
         elif icon_type == "network":
@@ -173,19 +244,23 @@ class DriverItem(BaseFucn):
             icon = gtk.image_new_from_file(ICON + "sound.png")
         else:
             icon = gtk.image_new_from_file(ICON + "usb.png")
+        align = self.define_align(icon)
+        align.set_padding(5, 5, 0, 0)
 
         item_box = gtk.HBox()
-        item_box.pack_start(icon, False, False, 6)
+        item_box.pack_start(align, False, False, 10)
 
-        vbox = gtk.VBox()
-        align = self.define_align(vbox, 0.0, 0.5, 1.0)
+        '''vbox --> (name_label,sum_label)'''
+        vbox = gtk.VBox(False, 4)
+        align = self.define_align(vbox, 0, 0.5, 1.0)
         item_box.pack_start(align)
 
+        '''pkg info'''
         pkgname = dri_tuple[1][0]
         name_label = gtk.Label()
         name_label.set_markup("<span font_desc='10'><b>%s</b></span>" % pkgname)
         name_label.set_alignment(0, 0)
-        vbox.pack_start(name_label, False, False, 2)
+        vbox.pack_start(name_label, False, False)
 
         pkgsum = dri_tuple[1][2]
         self.sum_label = gtk.Label()
@@ -194,49 +269,71 @@ class DriverItem(BaseFucn):
         self.sum_label.set_tooltip_text(pkgsum)
         vbox.pack_start(self.sum_label)
 
-        button = ActionButton(pkgname).button
+        '''action button'''
+        button = ActionButton(pkgname)
+        button.connect("focus-in-event", self.get_focus)
+        button.connect("focus-out-event", self.lose_focus)
         align = self.define_align(button, 0.0, 0.5, 1.0)
-        item_box.pack_end(align, False, False, 6)
+        item_box.pack_end(align, False, False, 15)
 
+        '''pkg version'''
         pkgver = dri_tuple[1][1]
         ver_label = gtk.Label()
         ver_label.set_markup("<span font_desc='10'>%s</span>" % pkgver)
         item_box.pack_end(ver_label, False, False, 20)
 
-        self.item = self.default_ebox()
-        self.item.connect("size-allocate", self.label_align)
-        self.item.add(item_box)
+        '''ebox --> item_box --> (vbox,button,ver_label)'''
+        #self.item = self.default_ebox()
+        self.connect("size-allocate", self.label_align)
+        self.add(item_box)
         
     def label_align(self, widget, event):
-	self.sum_label.set_ellipsize(pango.ELLIPSIZE_END)
+        try:
+            self.sum_label.set_ellipsize(pango.ELLIPSIZE_END)
+        except:pass
 
-class ActionButton(BaseFucn):
+    def get_focus(self, widget, event):
+        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#F5F8FA"))
+
+    def lose_focus(self, widget, event):
+        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFFF"))
+
+
+class ActionButton(gtk.Button, BaseFucn):
 
     def __init__(self, pkgname):
-
-        self.button = self.default_button()
-
+        gtk.Button.__init__(self)
         self.has_state = True
 
         self.label = gtk.Label()
-        self.button.add(self.label)
 
         '''judge the installation state'''
         self.judge_install(pkgname)
 
-        self.button.connect("clicked", self.on_click, pkgname)
-        self.button.connect("enter", self.enter_button)
-        self.button.connect("leave", self.leave_button)
+        self.set_size_request(self.n_pixbuf.get_width(), self.n_pixbuf.get_height())
+        self.add(self.label)
+
+        self.connect("expose_event", self.expose_button, self.n_pixbuf, self.h_pixbuf, self.p_pixbuf)
+        self.connect("clicked", self.on_click, pkgname)
+        self.connect("enter", self.enter_button)
+        self.connect("leave", self.leave_button)
 
     def judge_install(self, pkgname):
+        
         status = get_status(pkgname)
         if status == "*":
+            self.n_pixbuf, self.h_pixbuf, self.p_pixbuf = self.set_pixbuf(ICON +\
+            "install_n.png", ICON + "install_h.png", ICON + "install_p.png")
             self.label.set_markup("<span font_desc='10'>%s</span>" % _("install"))
             self.has_state = True
         elif status == "U":
+            self.n_pixbuf, self.h_pixbuf, self.p_pixbuf = self.set_pixbuf(ICON +\
+            "update_n.png", ICON + "update_h.png", ICON + "update_p.png")
             self.label.set_markup("<span font_desc='10'>%s</span>" % _("update"))
             self.has_state = True
         else:
+            self.n_pixbuf, self.h_pixbuf, self.p_pixbuf = self.set_pixbuf(ICON +\
+            "uninstall_n.png", ICON + "uninstall_h.png", ICON + "uninstall_p.png")
             self.label.set_markup("<span font_desc='10'>%s</span>" % _("ainstall"))
             #self.set_sensitive(False)
             self.has_state = False

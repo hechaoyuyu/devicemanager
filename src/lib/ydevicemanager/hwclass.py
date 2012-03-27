@@ -82,7 +82,7 @@ class Computer(gtk.VBox, BaseFucn):
 
             self.rigthlabel = gtk.Label()
             self.rigthlabel.set_alignment(0, 0)
-            self.rigthlabel.set_selectable(True)
+            #self.rigthlabel.set_selectable(True)
             self.rigthlabel.set_markup("<span font_desc='10'>%s</span>" %body[1])
 
             length = len(body[1])

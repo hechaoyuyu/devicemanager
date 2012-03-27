@@ -11,6 +11,15 @@ msgstr "下载驱动列表失败！"
 msgid "Network connection error, check your network!"
 msgstr "检测到与驱动服务器连接失败，请检查您的网络！"
 
+msgid "No need to install hardware device drivers!"
+msgstr "没有硬件设备需要安装驱动！"
+
+msgid "If you recently added hardware, please click 'Rescan'!"
+msgstr "如果您刚刚新增加了硬件，请点击上面的“重新扫描”!"
+
+msgid "You have installed the hardware required for driver!"
+msgstr "您已经安装完硬件所需的驱动程序！"
+
 msgid "Found a new device is added, you can re-test in order to obtain the latest hardware information."
 msgstr "发现有新的设备添加，您可以重新检测，以便得到最新的硬件信息。"
 
@@ -27,7 +36,7 @@ msgid "Do you want to update or install the driver(Y/N):"
 msgstr "您是否要更新或安装此驱动(Y/N)："
 
 msgid "Has detected that you have <span color='red' font_desc='10'>%s</span> hardware can be upgraded or installed driver!"
-msgstr "<span foreground='#000000' font_desc='10'>检测到你有</span><span color='red' font_desc='10'>%s</span><span foreground='#000000' font_desc='10'>款硬件可以升级或安装驱动！</span>"
+msgstr "<span font_desc='10'>检测到你有</span><span color='red' font_desc='10'>%s</span><span font_desc='10'>款硬件可以升级或安装驱动！</span>"
 
 msgid "install"
 msgstr "安装"
@@ -124,6 +133,9 @@ msgstr "保存报告"
 
 msgid "Re-tested"
 msgstr "重新检测"
+
+msgid "Re-scanned"
+msgstr "重新扫描"
 
 msgid "Hardware Brand"
 msgstr "硬件品牌"

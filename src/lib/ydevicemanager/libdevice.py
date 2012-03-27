@@ -31,10 +31,10 @@ class DeviceThread(Thread, gobject.GObject, BaseFucn):
 
         self.setDaemon(True)
         self.flag = flag
+        ydmg.lock = True
 	self.base = ydmg
 
     def run(self):
-
         '''Wait'''
         self.base.framebox.add(self.load_wait(self.base, "Loading, please wait ..."))
 
@@ -68,7 +68,7 @@ class DeviceThread(Thread, gobject.GObject, BaseFucn):
 	self.base.device_page = DevicePage(self.dev_dict, self.base)
         self.emit('load-wait')
 	self.base.select_page(DEV_ID)
-
+        self.base.lock = False
 
 class DevicePage(gtk.VBox):
 
@@ -82,7 +82,7 @@ class DevicePage(gtk.VBox):
 	self.pack_start(self.tipbar, False)
 
         #category box --> content view --> logo view
-	self.categorybox = DeviceCategory(dev_dict, self.select)
+	self.categorybox = DeviceCategory(dev_dict, self.select, base)
 	contentbox.pack_start(self.categorybox, False)
 
 	self.contentview = DeviceContent(dev_dict)
@@ -119,8 +119,8 @@ class DeviceBar(gtk.EventBox, BaseFucn):
 	tip_label = gtk.Label()
 	t = time.localtime(os.stat("/var/ypkg/packages/device.xml").st_mtime)
 	date = time.strftime("%Y-%m-%d %H:%M:%S", t)
-	tip_label.set_markup("<span foreground='#000000' font_desc='10'>%s</span>" % _("Date of last detection: ") + \
-			 "<span color='red' font_desc='10'>%s</span>" % date)
+	tip_label.set_markup("<span font_desc='10'>%s</span>" % _("Date of last detection: ") + \
+                            "<span color='red' font_desc='10'>%s</span>" % date)
 	bar_box.pack_start(tip_label, False, False)
 
         '''TEST'''
@@ -138,7 +138,7 @@ class DeviceBar(gtk.EventBox, BaseFucn):
     def re_tested(self, has_tap):
 
         button = self.ebox_button()
-        button.connect('button-press-event', self.on_click, has_tap)
+        button.connect('button-release-event', self.on_click, has_tap)
 
         label = gtk.Label()
         label.set_markup("<span foreground='#0092CE' font_desc='10'>%s</span>" % _("Re-tested"))
@@ -149,11 +149,11 @@ class DeviceBar(gtk.EventBox, BaseFucn):
     def report_scrot(self, iconpath, txt, has_tap):
 
         button = self.ebox_button()
-        button.connect('button-press-event', self.on_click, has_tap)
+        button.connect('button-release-event', self.on_click, has_tap)
 
 	icon = gtk.image_new_from_file(iconpath)
 	label = gtk.Label()
-	label.set_markup("<span foreground='#000000' font_desc='10'>%s</span>" % txt)
+	label.set_markup("<span font_desc='10'>%s</span>" % txt)
 
         box = gtk.HBox()
         box.pack_start(icon, False, False)
@@ -163,6 +163,9 @@ class DeviceBar(gtk.EventBox, BaseFucn):
         return button
 
     def on_click(self, widget, event, has_tap):
+        if not self.active_zone(widget):
+            return True # Returning TRUE indicates that this event has been handled and should not spread further.
+
 	if has_tap == "REPORT":
             self.save_file_as()
         elif has_tap == "SCROT":
@@ -216,29 +219,31 @@ class DeviceBar(gtk.EventBox, BaseFucn):
 
 class DeviceCategory(gtk.ScrolledWindow, BaseFucn):
 
-    def __init__(self, dev_dict, func):
+    def __init__(self, dev_dict, func, base):
 	gtk.ScrolledWindow.__init__(self)
 	self.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 	self.set_shadow_type(gtk.SHADOW_NONE)
 	tab = gtk.gdk.pixbuf_get_file_info(ICON + "tab_h.png")
 	self.set_size_request(tab[1] + 12, -1)
 
+        self.base = base
+        base.window.connect("key-press-event", self.key_down)
+
 	self.callback = func
 
-	keys = dev_dict.keys()
-	keys.sort()
+	self.keys = dev_dict.keys()
+	self.keys.sort()
 	self.categoryid = (0, "system")
 
 	vbox = gtk.VBox(False)
         align = self.define_align(vbox)
         align.set_padding(10, 0, 6, 0)
-
-	for key in keys:
+ 
+	for key in self.keys:
 	    button = self.draw_button(_(key[1]), ICON + "%s.png" % key[1], key)
             vbox.pack_start(button, False, False, 2)
 
 	self.add_with_viewport(align)
-
 	self.get_children()[0].modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#F5F8FA"))
 
     def draw_button(self, txt, icon, key):
@@ -251,12 +256,30 @@ class DeviceCategory(gtk.ScrolledWindow, BaseFucn):
 
 	button.set_size_request(h_pixbuf.get_width(), h_pixbuf.get_height())
 	button.connect("expose_event", self.expose_tab, txt, icon, h_pixbuf, p_pixbuf, key, self.get_id)
-
 	return button
 
     def get_id(self):
         return self.categoryid
 
+    def key_down(self, widget, event):
+        if self.base.pageid != DEV_ID:
+            return False # Return FALSE to continue normal processing.
+
+        i = self.categoryid[0]
+        l = len(self.keys)
+        if event.keyval == gtk.keysyms.Down:
+            i += 1
+            if i >= l:
+                self.callback(widget, self.keys[0])
+            else:
+                self.callback(widget, self.keys[i])
+        elif event.keyval == gtk.keysyms.Up:
+            i -= 1
+            if i < 0:
+                self.callback(widget, self.keys[l-1])
+            else:
+                self.callback(widget, self.keys[i])
+            
 
 class DeviceContent(gtk.ScrolledWindow):
 
