@@ -7,7 +7,10 @@ __date__ ="$2011-12-20 16:32:44$"
 import re
 import os
 import sys
+import hashlib
 import commands
+from subprocess import Popen,PIPE
+from globals import *
 from dbuscall import init_dbus
 
 def get_output(cmd):
@@ -259,3 +262,79 @@ def get_status(name):
         return ret
     except:
         return ret
+
+def open_conf():
+    '''open config file'''
+    try:
+        with open(CONFIG, "r") as fp:
+            data = fp.read()
+
+        for line in data.split('\n'):
+            path = re.match("YPPATH_URI=\"(.*)\"",line)
+            if path:
+                return path.group(1)
+    except:
+        return "http://pkg.ylmf.com/packages"
+
+def cmd_down():
+    '''cmd down'''
+    url = open_conf()
+
+    env = eval(environ())
+    if not env.get('DISPLAY'):
+        cmd = "curl --connect-timeout 10 --retry 2 -4 %s/driver.xml.tar.bz2 -o %s/driver.xml.tar.bz2" %(url, TARGET_DIR)
+        (status, output) = commands.getstatusoutput(cmd)
+    else:
+        cmd = "%s/terminal.py curl --connect-timeout 10 --retry 2 -4 %s/driver.xml.tar.bz2 -o %s/driver.xml.tar.bz2" %(RUN_DIR, url, TARGET_DIR)
+        process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True, env=env)
+        status = process.wait()
+
+    if status:
+        return C_Errno, "Network connection error, check your network!"
+    else:
+        return check_file("%s/driver.xml.tar.bz2" %TARGET_DIR, url)
+
+def ui_down():
+    '''ui down'''
+    url = open_conf()
+
+    cmd = "curl --connect-timeout 10 --retry 2 -4 %s/driver.xml.tar.bz2 -o %s/driver.xml.tar.bz2" %(url, TARGET_DIR)
+    process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
+    status = process.wait()
+
+    if status:
+        return C_Errno, "Network connection error, check your network!"
+    else:
+        return check_file("%s/driver.xml.tar.bz2" %TARGET_DIR, url)
+
+def check_file(tar_file, url):
+    '''check file'''
+    hash_new = hashlib.sha1()
+    with open(tar_file, 'rb') as fp:
+        while True:
+            data = fp.read()
+            if not data:
+                break
+            hash_new.update(data)
+    hash_value = hash_new.hexdigest()
+
+    cmd = "curl --connect-timeout 10 --retry 2 -4 %s/driver.xml.tar.bz2.sha1sum" %url
+    process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
+    status = process.wait()
+
+    if status:
+        return C_Errno, "Network connection error, check your network!"
+    else:
+        sha1sum = process.stdout.read().split()[0]
+
+    if hash_value == sha1sum:
+        os.system("tar -jxf %s -C %s" %(tar_file, TARGET_DIR))
+        return 0, "%s/driver.xml" %TARGET_DIR
+    else:
+        #return P_Errno, "File checksum error!"
+        '''test'''
+        cmd = "curl --connect-timeout 10 --retry 2 -4 %s/driver.xml -o %s/driver.xml" %(url, TARGET_DIR)
+        process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
+        return 0, "%s/driver.xml" %TARGET_DIR
+
+

@@ -12,7 +12,7 @@ import gettext
 import os
 import re
 from parsexml import Parser
-from dbuscall import init_dbus
+from syscall import ui_down
 
 gettext.textdomain('ydm')
 def _(s):
@@ -87,10 +87,7 @@ class Driver:
         self.alias_cache = {}
         self.dri_list = {}
 
-        iface = init_dbus()
-        '''set timeout is 600s, the default is 25s'''
-        self.status, self.output = iface.ui_down(timeout=600)
-        #iface.quit_loop()
+        self.status, self.output = ui_down()
         if self.status:
             return
 

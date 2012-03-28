@@ -6,7 +6,7 @@ __date__ = "$2012-2-22 13:16:58$"
 
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop, threads_init
-from globals import *
+from globals import DBUS_IFACE, DBUS_PATH
 
 def init_dbus(dbus_iface=DBUS_IFACE, dbus_path=DBUS_PATH):
     '''init dbus'''

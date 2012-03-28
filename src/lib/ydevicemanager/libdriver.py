@@ -349,6 +349,7 @@ class ActionButton(gtk.Button, BaseFucn):
     def on_click(self, widget, pkgname):
         iface = init_dbus()
         if self.has_state:
+            '''set timeout is 600s, the default is 25s'''
             iface.install(pkgname, environ(), timeout=600)
         else:
             iface.uninstall(pkgname, environ(), timeout=600)

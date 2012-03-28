@@ -23,7 +23,7 @@ import re
 import commands
 import gettext
 from parsexml import Parser
-from syscall import environ
+from syscall import cmd_down, environ
 from dbuscall import init_dbus
 
 gettext.textdomain('ydm')
@@ -101,9 +101,7 @@ class ModaliasID:
     
         self.alias_cache = {} 
         
-        self.iface = init_dbus()
-        '''set timeout is 600s, the default is 25s'''
-        status, output = self.iface.cmd_down(environ(), timeout=600)
+        status, output = cmd_down()
         if status:
             print _(output)
             return None
@@ -196,7 +194,10 @@ class ModaliasID:
         return hw
 
     def get_db_handlers(self, hardware):
+
         flag = False
+        iface = init_dbus()
+
         for hwid in hardware:
             dids = self._do_query(hwid)
             if not dids:
@@ -222,11 +223,11 @@ class ModaliasID:
                             print str(output)
                     else:
                         '''set timeout is 600s, the default is 25s'''
-                        self.iface.install(did["package"][0], environ(), timeout=600)
+                        iface.install(did["package"][0], environ(), timeout=600)
 
+        iface.quit_loop()
         if not flag:
             print _("No proprietary drivers are in use on this system.")
-        self.iface.quit_loop()
 
 if __name__ == '__main__':
     ModaliasID()

@@ -10,7 +10,6 @@ D = 10
 DEV_ID = 0
 DRI_ID = 1
 TEST_ID = 2
-HW_XML = "/var/ypkg/packages/device.xml"
 ICON = "/usr/share/ydevicemanager/"
 LOGO = "/usr/share/ydevicemanager/logo/"
 
@@ -20,11 +19,16 @@ DEFAULT_FONT_SIZE = 13
 DEFAULT_WIDTH = 800
 DEFAULT_HEIGHT = 570
 
+CONFIG = "/etc/yget.conf"
 DBUS_IFACE = 'com.ylmf.ydm'
 DBUS_PATH = '/com/ylmf/ydm'
 
-CONFIG = "/etc/yget.conf"
-TARGET_DIR= "/var/ypkg/packages"
+HOME = os.path.expanduser("~")
+TARGET_DIR = HOME + "/.ydm"
+if not os.path.isdir(TARGET_DIR):
+    #os.system("mkdir -p %s" %TARGET_DIR)
+    os.mkdir(TARGET_DIR)
+HW_XML = TARGET_DIR + "/device.xml"
 RUN_DIR = os.path.abspath(os.path.dirname(__file__))
 
 C_Errno = 1
@@ -97,6 +101,7 @@ VENDORS = {
     #摄像头
     "SONIX":["SONIX.jpg", "www.sonix.com.tw", "Sonix"],
     "ETRON":["ETRON.jpg", "www.etron.com.tw", "Etron"],
+    "EMPIA":["EMPIA.jpg", "www.empiatech.com.tw", "EETI"],
     "CHICONY":["CHICONY.jpg", "www.chicony.com.tw", "Chicony"],
     #鼠标产商
     "LOGITECH":["LOGITECH.jpg", "www.logitech.com", "Logitech"],

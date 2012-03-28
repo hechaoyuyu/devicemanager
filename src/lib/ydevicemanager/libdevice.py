@@ -41,7 +41,9 @@ class DeviceThread(Thread, gobject.GObject, BaseFucn):
 	if not os.path.isfile(HW_XML) or self.flag == "TEST":
             '''set timeout is 600s, the default is 25s'''
             iface = init_dbus()
-            iface.scan_device(timeout=600)
+            data = iface.scan_device(timeout=600)
+            with open(HW_XML,"w") as fp:
+                fp.write(data)
             iface.quit_loop()
             '''
             def f():
