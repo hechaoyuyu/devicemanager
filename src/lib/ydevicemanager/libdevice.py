@@ -119,7 +119,7 @@ class DeviceBar(gtk.EventBox, BaseFucn):
         self.add(align)
 
 	tip_label = gtk.Label()
-	t = time.localtime(os.stat("/var/ypkg/packages/device.xml").st_mtime)
+	t = time.localtime(os.stat(HW_XML).st_mtime)
 	date = time.strftime("%Y-%m-%d %H:%M:%S", t)
 	tip_label.set_markup("<span font_desc='10'>%s</span>" % _("Date of last detection: ") + \
                             "<span color='red' font_desc='10'>%s</span>" % date)
