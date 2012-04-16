@@ -32,6 +32,9 @@ msgstr "文件校验错误！"
 msgid "There are new or updated drivers available for your hardware:\nDriver name:\t%s\nDriver packages:%s\nVersion number:\t%s\nDescription:\t%s"
 msgstr "您的硬件有新的或者可升级的驱动:\n驱动名:\t%s\n驱动包:\t%s\n版本号:\t%s\n描述:\t%s"
 
+msgid "The system has the corresponding drive loading,continue?"
+msgstr "系统中已加载对应的驱动，是否继续？"
+
 msgid "Do you want to update or install the driver(Y/N):"
 msgstr "您是否要更新或安装此驱动(Y/N)："
 
@@ -149,6 +152,9 @@ msgstr "中芯微"
 msgid "Nvidia"
 msgstr "英伟达"
 
+msgid "SIS"
+msgstr "矽统"
+
 msgid "VIA"
 msgstr "威盛"
 
@@ -203,6 +209,9 @@ msgstr "高通"
 msgid "Broadcom"
 msgstr "博通"
 
+msgid "Marvell"
+msgstr "美满电子"
+
 msgid "Ralink"
 msgstr "雷凌"
 
@@ -222,7 +231,7 @@ msgid "Western Digital"
 msgstr "西数"
 
 msgid "Liteon"
-msgstr "Liteon"
+msgstr "建兴"
 
 msgid "Seagate"
 msgstr "希捷"
@@ -230,14 +239,14 @@ msgstr "希捷"
 msgid "Quantum"
 msgstr "昆腾"
 
-msgid "PLDS"
-msgstr "飞利浦建兴"
-
 msgid "Philips"
 msgstr "飞利浦"
 
 msgid "Pioneer"
 msgstr "先锋"
+
+msgid "Panasonic"
+msgstr "松下"
 
 msgid "Realtek"
 msgstr "瑞昱"
@@ -248,8 +257,20 @@ msgstr "创新科技"
 msgid "Sonix"
 msgstr "松翰"
 
+msgid "OmniVision"
+msgstr "豪威"
+
+msgid "Syntek"
+msgstr "太欣"
+
+msgid "Aveotek"
+msgstr "嘉映微电子"
+
 msgid "Etron"
 msgstr "钰创科技"
+
+msgid "Avago"
+msgstr "安华高科技"
 
 msgid "Chicony"
 msgstr "群光"
@@ -259,6 +280,9 @@ msgstr "罗技"
 
 msgid "Microsoft"
 msgstr "微软"
+
+msgid "Rapoo"
+msgstr "雷柏"
 
 msgid "Primax"
 msgstr "致伸科技"
@@ -315,7 +339,7 @@ msgid "Phoenix"
 msgstr "凤凰"
 
 msgid "Computer preview"
-msgstr "电脑预览"
+msgstr "电脑概览"
 
 msgid "system"
 msgstr "电脑预览"
@@ -533,8 +557,14 @@ msgstr "生产日期"
 msgid "%s year num %s week"
 msgstr "%s年第%s周"
 
+msgid "Apparent Area"
+msgstr "可视面积"
+
 msgid "Dimension"
 msgstr "屏幕尺寸"
+
+msgid "inches"
+msgstr "英寸"
 
 msgid "Current resolution"
 msgstr "当前分辨率"
@@ -718,6 +748,9 @@ msgstr "鼠标"
 
 msgid "Human interface device"
 msgstr "人机接口设备"
+
+msgid "Bluetooth wireless interface"
+msgstr "蓝牙无线接口"
 
 msgid "Keyboard"
 msgstr "键盘"

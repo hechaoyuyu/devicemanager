@@ -7,7 +7,9 @@ __date__ ="$2011-12-20 16:32:44$"
 import re
 import os
 import sys
+import math
 import hashlib
+import platform
 import commands
 from subprocess import Popen,PIPE
 from globals import *
@@ -26,42 +28,36 @@ def record_sign():
     except:
 	return "C"
 
-def readfile(name):
+def readfile(path):
     try:
-	with open(name, 'r') as fp:
+	with open(path, 'r') as fp:
             return fp.read()
     except:
         return 'N/A'
 
 def host_name():
-    host_name.please_refresh_me = True
+    return platform.node()
+    
+def user():
     try:
-	return get_output('hostname')
-    except:
-	return ""
-
-def kernel():
-    ret = []
-    try: ret.append(get_output('uname -r'))
-    except: pass
-
-    try: ret.append(get_output('uname -m'))
-    except: pass
-    return ret
-
-def xorg():
-    try:
-        for line in get_output('Xorg -version').split('\n'):
-            if line.startswith('X.Org X Server'):
-                return line.strip()
+        import os
+        string = '%s (UID: %s, GID: %s)' % (os.environ['USER'], os.getuid(), os.getgid())
+        return string
     except:
         return ""
+
+def os_version():
+    name, version, code = platform.dist()
+    return version + ' ' + code
+
+def kernel():
+    return platform.release(), platform.machine()
 
 def uptime():
     ret = {}
     try:
-        with open('/proc/uptime') as fp:
-            string = fp.read().split('.')[0]
+        info = readfile('/proc/uptime')
+        string = info.split('.')[0]
         seconds = int(string)
         minutes = seconds / 60
         hours = minutes / 60
@@ -74,7 +70,6 @@ def uptime():
 	    ret["hour"] = str(hours)
         if minutes:
 	    ret["minute"] = str(minutes)
-
     except:
 	print >> sys.stderr, 'uptime failed'
 
@@ -83,18 +78,17 @@ def uptime():
 def install_time():
     try:
         import time
-        with open('/etc/install_date') as fp:
-            date = fp.read().strip('\n')
-            date = time.localtime(float(date))
+        date = readfile('/etc/install_date').strip('\n')
+        date = time.localtime(float(date))
         return time.strftime("%Y-%m-%d %H:%M:%S %A", date)
     except:
         return ""
 
-def user():
+def xorg():
     try:
-        import os
-        string = '%s (UID: %s, GID: %s)' % (os.environ['USER'], os.getuid(), os.getgid())
-        return string
+        for line in get_output('Xorg -version').split('\n'):
+            if line.startswith('X.Org X Server'):
+                return line.strip()
     except:
         return ""
 
@@ -115,14 +109,6 @@ def opengl():
     except:
         print >> sys.stderr, 'Command failed: glxinfo'
     return ret
-
-def os_version():
-    try:
-        import platform
-        name, version, code = platform.dist()
-        return version + " " + code
-    except:
-        return ""
 
 def udisks(dev):
     ret = {}
@@ -170,7 +156,7 @@ def sensors():
     #info = get_output("lsmod")
     #coretemp = re.findall("coretemp",info)
     try:
-        get_output("lsmod | grep -w coretemp")
+        get_output('lsmod | grep -w coretemp')
     except:
         iface = init_dbus()
 	iface.modprobe()
@@ -182,38 +168,45 @@ def sensors():
     except:
 	return ""
 
+def lsmod(name):
+    try:
+        get_output('lsmod | grep -w %s' %name)
+    except:
+        return False
+    return True
+
 def get_monitor():
     ret = {}
     try:
-	info = readfile("/var/log/Xorg.0.log")
-        tmp = re.findall("Monitor name: \s*(\w*)\s*(\w*)", info)
-        #tmp = re.findall("Monitor name: \s*(.*)", info)
-        if tmp:
-            if tmp[0][1]:
-                ret["vendor"] = tmp[0][0]
-                ret["product"] = tmp[0][0] + " " + tmp[0][1]
-            else:ret["product"] = tmp[0][0]
-        
+	xrandr = get_output('xrandr')
+        info = readfile('/var/log/Xorg.0.log')
         tmp = re.findall("Manufacturer:\s*(\w*)\s*Model:\s*(\w*)", info)
         if tmp:
-            if not ret.get("product"):
-                ret["product"] = tmp[0][0] + " " + tmp[0][1]
-            if not ret.get("vendor"):
+            ret["product"] = tmp[0][0] + " " + tmp[0][1]
+            ret["vendor"] = tmp[0][0]
+
+        tmp = re.findall("Monitor name: \s*(\w*)\s*(\w*)", info)
+        if tmp:
+            if tmp[0][1] and not ret.get("vendor"):
                 ret["vendor"] = tmp[0][0]
+                ret["product"] = tmp[0][0] + " " + tmp[0][1]
+            elif not ret.get("product"):
+                ret["product"] = tmp[0][0]
 
 	tmp = re.findall("Year:\s*(\w*)\s*Week:\s*(\w*)", info)
-      
 	if tmp:
 	    ret["year"] = tmp[0][0]
 	    ret["week"] = tmp[0][1]
 
-	tmp = re.findall("EDID Version: (\S*)", info)
+	#tmp = re.findall("Max Image Size \[(\w*)\]: horiz.: (\w*)\s*vert.: (\w*)", info)
+        tmp = re.findall("Image Size: \s*(\w*) x (\w*)", info)
 	if tmp:
-	    ret["version"] = tmp[0]
+            x = float(tmp[0][0])/10
+            y = float(tmp[0][1])/10
+            d = math.sqrt(x**2 + y**2)/2.54
 
-	tmp = re.findall("Max Image Size \[(\w*)\]: horiz.: (\w*)\s*vert.: (\w*)", info)
-	if tmp:
-	    ret["size"] = tmp[0][1] + tmp[0][0] + "x" + tmp[0][2] + tmp[0][0]
+	    ret["size"] = str(x) + "cm" + " x " + str(y) + "cm"
+            ret["in"] = "%.1f" %d
 
 	tmp = re.findall("Gamma: (\S*)", info)
 	if tmp:
@@ -224,17 +217,17 @@ def get_monitor():
 	if h and v:
 	    ret["maxmode"] = h[0] + "x" + v[0]
 
-	tmp = re.findall("EDID for output (\D*)", info)
+	tmp = re.findall("EDID for output (.*)", info)
 	if tmp:
 	    ret["support output"] = tmp
 
-	tmp = re.findall("Output (\D*).* connected", info)
+	tmp = re.findall("Output (.*).* connected", info)
 	if tmp:
 	    ret["output"] = tmp[0]
 
-	tmp = re.findall("Output \w* using initial mode (\w*)", info)
+	tmp = re.findall("current (\d*) x (\d*)", xrandr)
 	if tmp:
-	    ret["mode"] = tmp[0]
+	    ret["mode"] = tmp[0][0] + "x" + tmp[0][1]
 
 	tmp = re.findall("Integrated Graphics Chipset: (.*)", info)
 	if tmp:
@@ -246,7 +239,7 @@ def get_monitor():
     return ret
 
 def cpuinfo():
-    info = readfile("/proc/cpuinfo")
+    info = readfile('/proc/cpuinfo')
     return str(len(re.findall("processor\s*:\s*(.*)", info)))
 
 def environ():
@@ -256,7 +249,7 @@ def environ():
 def get_status(name):
     ret = "*"
     try:
-        info = get_output("yget --status %s" %name)
+        info = get_output('yget --status %s' %name)
         status = re.findall("Status:\s*(.*)", info)
         ret = status[0]
         return ret
@@ -266,9 +259,7 @@ def get_status(name):
 def open_conf():
     '''open config file'''
     try:
-        with open(CONFIG, "r") as fp:
-            data = fp.read()
-
+        data = readfile(CONFIG)
         for line in data.split('\n'):
             path = re.match("YPPATH_URI=\"(.*)\"",line)
             if path:
@@ -337,4 +328,11 @@ def check_file(tar_file, url):
         process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
         return 0, "%s/driver.xml" %TARGET_DIR
 
+def xz_file():
+    '''xz file'''
+    try:
+        get_output("tar -cf %s %s /var/log/Xorg.*" %(TAR_XML, HW_XML))
+        get_output("xz -fz %s" %TAR_XML)
+        return 0
+    except:return 1
 

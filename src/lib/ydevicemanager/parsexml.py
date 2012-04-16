@@ -13,7 +13,7 @@ class Parser:
         self.des = None
 
         self.pcid = {}
-        self.part = re.compile('(\w+)\((.+)\)')
+        self.part = re.compile('(.+)\((.+)\)')
 
         self._parser = expat.ParserCreate()
         #default size 2048
@@ -44,9 +44,9 @@ class Parser:
             value = self.part.match(m)
             if not value:
                 return
-            module,pci = value.group(1),value.group(2)
+            module, pci = value.group(1), value.group(2)
             for alias in pci.split(','):
-                self.pcid.setdefault((self.pkg,self.ver,self.des),{}).setdefault(module,[]).append(alias.strip())
+                self.pcid.setdefault((self.pkg, self.ver, self.des), {}).setdefault(module, []).append(alias.strip())
 
     def feed(self, path):
         with open(path) as fp:

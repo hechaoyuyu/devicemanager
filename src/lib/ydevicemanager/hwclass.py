@@ -117,7 +117,7 @@ class Computer(gtk.VBox, BaseFucn):
         align.add(widget)
 	return align
 
-    def dev_logo(self, vendor, product=""):
+    def dev_logo(self, vendor="", product=""):
 
         icon_url = self.match_vid(vendor, product)
         if not icon_url:
@@ -154,7 +154,12 @@ class Computer(gtk.VBox, BaseFucn):
                     url = VENDORS.get(p.upper())
                     if url:
                         return url
-
+            else:
+                p = p.split(" ")[0]
+                url = VENDORS.get(p.upper())
+                if url:
+                    return url
+        
         tmp = re.findall("\[(.*)\]", v[-6:])
         if tmp:
             '''ID'''
@@ -211,10 +216,9 @@ class System(Computer):
         bodys.append((_("System version"), os_version()))
         bodys.append((_("Install time"), install_time()))
 
-	core = kernel()
-        if core:
-            bodys.append((_("Kernel version"), core[0]))
-            bodys.append((_("Kernel arch"), core[1]))
+	release, machine = kernel()
+        bodys.append((_("Kernel version"), release))
+        bodys.append((_("Kernel arch"), machine))
 
         bodys.append((_("Xorg version"), xorg()))
 
@@ -391,9 +395,9 @@ class Display(Computer):
         Computer.__init__(self, product)
 
         try:
-            ID = re.findall("\[(.*)\]", vendor)[0]
+            ID = re.findall("\[(.*)\]", vendor[-6:])[0]
         except:ID = "8086"
-	if ID != "8086":
+	if ID == "1002" or ID == "10DE":
 	    cardtype = _("Graphics card")
 	else:
 	    cardtype = _("Integrated graphics")
@@ -436,7 +440,7 @@ class Monitor(Computer):
         if product:
             bodys.append((_(self.category), product.upper()))
 
-	vendor = dict.get("vendor")
+	vendor = dict.get("vendor", '')
 	bodys.append((_("Vendor"), _(vendor)))
 
 	year = dict.get("year")
@@ -448,7 +452,10 @@ class Monitor(Computer):
 	self.tag_box(_("Expand Info"))
 
         del bodys[:]
-	bodys.append((_("Dimension"), dict.get("size")))
+	bodys.append((_("Apparent Area"), dict.get("size")))
+        inch = dict.get("in")
+        if inch:
+            bodys.append((_("Dimension"), inch + _("inches")))
 	bodys.append((_("Current resolution"), dict.get("mode")))
 	bodys.append((_("Max resolution"), dict.get("maxmode")))
 	bodys.append((_("Gamma"), dict.get("gamma")))
@@ -618,7 +625,7 @@ class Disk(Computer):
 	    if wwn:
 		bodys.append((_("WWN"), wwn.upper()))
             self.body_box(bodys)
-            
+
 	    self.logo = self.dev_logo(vendor, product)
 
 	else:
@@ -758,7 +765,10 @@ class Generic(Computer):
     def __init__(self, description, product, vendor, version, businfo, serial, config, capability):
         Computer.__init__(self, product)
 
-	self.title_box(_(self.category))
+        if description:
+            self.title_box(_(description))
+        else:
+            self.title_box(_(self.category))
         self.tag_box(_("Basic Info"))
 
         bodys = []

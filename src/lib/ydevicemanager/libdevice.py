@@ -10,6 +10,7 @@ import gobject
 from threading import Thread
 
 from globals import *
+from syscall import xz_file
 from widgets import BaseFucn
 from devices import Device
 from dbuscall import init_dbus
@@ -38,31 +39,14 @@ class DeviceThread(Thread, gobject.GObject, BaseFucn):
         '''Wait'''
         self.base.framebox.add(self.load_wait(self.base, "Loading, please wait ..."))
 
-	if not os.path.isfile(HW_XML) or self.flag == "TEST":
+	if not os.path.isfile(HW_XML) or not os.path.getsize(HW_XML) or self.flag == "TEST":
             '''set timeout is 600s, the default is 25s'''
             iface = init_dbus()
             data = iface.scan_device(timeout=600)
             with open(HW_XML,"w") as fp:
                 fp.write(data)
             iface.quit_loop()
-            '''
-            def f():
-                iface = init_dbus()
-                #set timeout is 600s, the default is 25s
-                iface.scan_device(timeout=600)
-                iface.quit_loop()
-
-            fn = Thread(None, f)
-            fn.start()
-
-            n = 0
-            while True:
-                fn.join(0.2)
-                if not fn.isAlive():
-                    break
-                n += 1
-                ydmg.progressbar.set_fraction(float(n)/100)
-            '''
+            
 	device = Device(HW_XML)
 	self.dev_dict = device.dev_type
         self.base.pcid = device.pcid
@@ -178,10 +162,14 @@ class DeviceBar(gtk.EventBox, BaseFucn):
             device_thread.start()
 
     def save_file(self, fname):
-
+        
         if fname:
+            if xz_file():
+                name = HW_XML
+            else:
+                name = TARGET_DIR + "/device.tar.xz"
             with open(fname, 'w') as fp:
-                txt = self.read_file(HW_XML)
+                txt = self.read_file(name)
                 fp.write(txt)
         else:
             self.save_file_as()
@@ -196,7 +184,7 @@ class DeviceBar(gtk.EventBox, BaseFucn):
 
     def save_file_as(self):
 
-        fname = "device.xml"
+        fname = "device.tar.xz"
         chooser = gtk.FileChooserDialog(_('Save report'),
                                         None, gtk.FILE_CHOOSER_ACTION_SAVE,
                                         buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,

@@ -108,7 +108,7 @@ class Driver:
                     if vp:
                         self.alias_cache.setdefault(vp.group(1), {}).setdefault(vp.group(2), \
                         {}).setdefault(alias, []).append((module, pkg))
-
+        
     def packed_env_string(self):
 
         env = dict(os.environ)
@@ -165,11 +165,13 @@ class Driver:
 
             bus = mate.group(1) #bus type
             vid = mate.group(2) #vendor id
+            
             for id, mods in self.alias_cache.get(bus, {}).get(vid, {}).iteritems():
                 if mods and HardwareID('modalias', id) == hwid: #local id eq web id
                     for (mod, pkg) in mods:
                         if pkg and key:
                             pcid.setdefault(key, []).append((mod, pkg))
+                        
         return pcid
 
     def get_drivers(self):
@@ -179,4 +181,4 @@ class Driver:
         for hwid in hardware:
             pcid = self._do_query(hwid)
             if pcid:
-                 self.dri_list.update(pcid)
+                self.dri_list.update(pcid)

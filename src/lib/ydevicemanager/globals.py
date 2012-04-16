@@ -7,6 +7,7 @@ import os
 
 R = 4
 D = 10
+S = 6
 DEV_ID = 0
 DRI_ID = 1
 TEST_ID = 2
@@ -29,6 +30,7 @@ if not os.path.isdir(TARGET_DIR):
     #os.system("mkdir -p %s" %TARGET_DIR)
     os.mkdir(TARGET_DIR)
 HW_XML = TARGET_DIR + "/device.xml"
+TAR_XML = TARGET_DIR + "/device.tar"
 RUN_DIR = os.path.abspath(os.path.dirname(__file__))
 
 C_Errno = 1
@@ -42,6 +44,7 @@ VENDORS = {
     #显卡产商
     "ATI":["ATI.jpg", "www.ati.com", "ATI"],
     "1002":["ATI.jpg", "www.ati.com", "ATI"],
+    "1039":["SIS.jpg", "www.sis.com", "SIS"],
     "NVIDIA":["NVIDIA.jpg", "www.nvidia.com", "Nvidia"],
     "VIA":["VIA.jpg", "www.via.com.tw", "VIA"],
     "XFX":["XFX.jpg", "www.xfx.com.cn", "XFX"],
@@ -80,6 +83,7 @@ VENDORS = {
     "D-LINK":["D-LINK.jpg", "www.dlink.com.tw", "D-LINK"],
     "RALINK":["RALINK.jpg", "www.ralinktech.com", "Ralink"],
     "ATHEROS":["ATHEROS.jpg", "www.atheros.com", "Atheros"],
+    "MARVELL":["MARVELL.jpg", "www.marvell.com", "Marvell"],
     "BROADCOM":["BROADCOM.jpg", "www.broadcom.com", "Broadcom"],
     #硬盘产商
     "EXCELSTOR":["EXCELSTOR.jpg", "www.excelstor.com", "Excelstor"],
@@ -90,26 +94,33 @@ VENDORS = {
     "SEAGATE":["SEAGATE.jpg", "www.seagate.com", "Seagate"],
     "QUANTUM":["QUANTUM.jpg", "www.quantum.com", "Quantum"],
     #光驱产商
-    "PLDS":["PHILIPS.jpg", "www.philips.com", "PLDS"],
+    "PLDS":["PLDS.jpg", "www.pldsnet.com", "PLDS"],
     "HL-DT-ST":["LG.jpg", "www.lge.com", "LG"],
     "OPTIARC":["SONY.jpg", "www.sony-optiarc.com", "SONY"],
     "TSSTCORP":["TSSTCORP.jpg", "www.tsstorage.com", "TSSTcorp"],
     "PIONEER":["PIONEER.jpg", "www.pioneerchina.com", "Pioneer"],
+    "MATSHITA":["PANASONIC.jpg", "www.panasonic.cn", "Panasonic"],
     #声卡产商
     "REALTEK":["REALTEK.jpg", "www.realtek.com.tw", "Realtek"],
     "CREATIVE":["CREATIVE.jpg", "www.creative.com", "Creative"],
     #摄像头
     "SONIX":["SONIX.jpg", "www.sonix.com.tw", "Sonix"],
     "ETRON":["ETRON.jpg", "www.etron.com.tw", "Etron"],
+    "AVEO":["AVEO.jpg", "www.aveotek.com", "Aveotek"],
+    "SYNTEK":["SYNTEK.jpg", "www.stk.com.tw", "Syntek"],
     "EMPIA":["EMPIA.jpg", "www.empiatech.com.tw", "EETI"],
     "CHICONY":["CHICONY.jpg", "www.chicony.com.tw", "Chicony"],
+    "OMNIVISION":["OMNIVISION.jpg", "www.ovt.com", "OmniVision"],
     #鼠标产商
     "LOGITECH":["LOGITECH.jpg", "www.logitech.com", "Logitech"],
     "SUNPLUS":["SUNPLUS.jpg", "www.sunplus.com", "Sunplus"],
     "PRIMAX":["PRIMAX.jpg", "www.primax.com.cn", "Primax"],
     "PIXART":["PIXART.jpg", "www.pixart.com.tw", "Pixart"],
     "TRUST":["TRUST.jpg", "www.trust.com", "Trust"],
+    "AVAGO":["AVAGO.jpg", "www.avagotech.cn", "Avago"],
     "MICROSOFT":["MICROSOFT.jpg", "www.microsoft.com", "Microsoft"],
+    #键盘产商
+    "RAPOO":["RAPOO.jpg", "www.rapoo.com", "Rapoo"],
     #主板产商
     "GIGABYTE":["GIGABYTE.jpg", "www.gigabyte.com.tw", "Gigabyte"],
     "BIOSTAR":["BIOSTAR.jpg", "www.biostar.com.tw", "Biostar"],

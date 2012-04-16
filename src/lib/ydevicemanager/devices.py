@@ -125,7 +125,7 @@ class Device:
                 cache = Cache(self.description, self.product, self.vendor, self.version, self.slot, self.size)
 		self.dev_type.setdefault((1, "cpu"), []).append(cache)
 
-            elif self.attr["id"] == "core" and self.attr["class"] == "bus":
+            elif (self.attr["id"] == "core" or self.attr["id"] == "board") and self.attr["class"] == "bus":
                 motherboard = Motherboard(self.description, self.product, self.vendor, self.version, self.serial)
 		self.dev_type.setdefault((2, "motherboard"), []).append(motherboard)
             
@@ -187,7 +187,7 @@ class Device:
 		self.dev_type.setdefault((11, "input"), []).append(imput)
                 self.pcid[imput.pcid] = "input"
 
-            elif self.attr["id"] != "generic" and self.attr["class"] == "generic":
+            elif self.attr["id"].split(":")[0] != "generic" and self.attr["class"] == "generic":
                 generic = Generic(self.description, self.product, self.vendor, self.version, \
                 self.businfo, self.serial, self.config, self.capability)
 		self.dev_type.setdefault((12, "generic"), []).append(generic)

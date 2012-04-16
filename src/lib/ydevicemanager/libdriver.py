@@ -6,13 +6,14 @@ __date__ ="$2012-3-8 21:20:40$"
 import gtk
 import pango
 import gobject
+from sets import Set
 from threading import Thread
 
 from globals import *
 from widgets import BaseFucn
 from drivers import Driver
 from dbuscall import init_dbus
-from syscall import environ, get_status
+from syscall import environ, get_status, lsmod
 
 
 import gettext
@@ -195,7 +196,7 @@ class DriverContent(gtk.ScrolledWindow, BaseFucn):
             vbox.pack_start(overpage)
 
         for key in dri_list.keys():
-            for dri_tuple in dri_list[key]:
+            for dri_tuple in list(Set(dri_list[key])):
                 id = base.pcid.get(key)
                 if id:
                     dri_item = DriverItem(id, dri_tuple)
@@ -261,7 +262,7 @@ class DriverItem(gtk.EventBox, BaseFucn):
         name_label.set_markup("<span font_desc='10'><b>%s</b></span>" % pkgname)
         name_label.set_alignment(0, 0)
         vbox.pack_start(name_label, False, False)
-
+        
         pkgsum = dri_tuple[1][2]
         self.sum_label = gtk.Label()
         self.sum_label.set_markup("<span font_desc='10'>%s</span>" % pkgsum)
@@ -270,7 +271,8 @@ class DriverItem(gtk.EventBox, BaseFucn):
         vbox.pack_start(self.sum_label)
 
         '''action button'''
-        button = ActionButton(pkgname)
+        pkgmod = dri_tuple[0]
+        button = ActionButton(pkgname, pkgmod)
         button.connect("focus-in-event", self.get_focus)
         button.connect("focus-out-event", self.lose_focus)
         align = self.define_align(button, 0.0, 0.5, 1.0)
@@ -301,7 +303,7 @@ class DriverItem(gtk.EventBox, BaseFucn):
 
 class ActionButton(gtk.Button, BaseFucn):
 
-    def __init__(self, pkgname):
+    def __init__(self, pkgname, pkgmod):
         gtk.Button.__init__(self)
         self.has_state = True
 
@@ -314,7 +316,7 @@ class ActionButton(gtk.Button, BaseFucn):
         self.add(self.label)
 
         self.connect("expose_event", self.expose_button, self.n_pixbuf, self.h_pixbuf, self.p_pixbuf)
-        self.connect("clicked", self.on_click, pkgname)
+        self.connect("clicked", self.on_click, pkgname, pkgmod)
         self.connect("enter", self.enter_button)
         self.connect("leave", self.leave_button)
 
@@ -346,13 +348,57 @@ class ActionButton(gtk.Button, BaseFucn):
         if not self.has_state:
             self.label.set_markup("<span font_desc='10'>%s</span>" % _("ainstall"))
 
-    def on_click(self, widget, pkgname):
+    def on_click(self, widget, pkgname, pkgmod):
+        
         iface = init_dbus()
         if self.has_state:
-            '''set timeout is 600s, the default is 25s'''
-            iface.install(pkgname, environ(), timeout=600)
+            if lsmod(pkgmod):
+                if self.show_dialog():
+                    '''set timeout is 600s, the default is 25s'''
+                    iface.install(pkgname, environ(), timeout=600)
+            else:
+                 iface.install(pkgname, environ(), timeout=600)
         else:
             iface.uninstall(pkgname, environ(), timeout=600)
 
         self.judge_install(pkgname)
         iface.quit_loop()
+
+    def show_dialog(self):
+
+        dialog = gtk.Dialog(_('DriveOn'),
+                            None,
+                            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                            (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                            gtk.STOCK_OK, gtk.RESPONSE_OK))
+
+        dialog.set_resizable(False)
+        dialog.set_default_response(gtk.RESPONSE_OK)
+
+        warn_box = gtk.VBox()
+        warn_box.show()
+
+        align = self.define_align(warn_box, 0.5, 0.5)
+        align.show()
+        dialog.vbox.pack_start(align)
+
+        tip_box = gtk.HBox()
+        tip_box.show()
+        warn_box.pack_start(tip_box, False, False)
+
+	icon = gtk.image_new_from_file(ICON + "test.png")
+        icon.show()
+        tip_box.pack_start(icon, False)
+
+        label = gtk.Label()
+        label.show()
+        label.set_markup("<span font_desc='10'>%s</span>" % _("The system has the corresponding drive loading,continue?"))
+        tip_box.pack_start(label, False, False, 6)
+        
+        res = dialog.run()
+        dialog.destroy()
+        
+        if res == gtk.RESPONSE_OK:
+            return True
+        if res == gtk.RESPONSE_REJECT:
+            return False

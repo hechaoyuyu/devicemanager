@@ -73,7 +73,10 @@ class DeviceManger(BaseFucn):
         if has_udev:
             self.device_changed()
 
-        self.window.add(self.mainbox)
+        self.align = self.define_align(self.mainbox, xc=1.0, yc=1.0)
+        self.align.set_padding(2*S, 2*S, 2*S, 2*S)
+
+        self.window.add(self.align)
         self.window.show_all()
 
         self.device_thread = DeviceThread(self)
@@ -83,7 +86,7 @@ class DeviceManger(BaseFucn):
         self.driver_thread = DriverThread(self)
         self.driver_thread.start()
 
-        if os.path.isfile(HW_XML):
+        if os.path.isfile(HW_XML) and os.path.getsize(HW_XML):
             self.device_thread.join()
 
         gtk.gdk.threads_enter()

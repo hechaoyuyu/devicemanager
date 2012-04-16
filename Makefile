@@ -29,6 +29,7 @@ install:
 	-install src/bin/ydm-cmd $(DESTDIR)$(PREFIX)/bin/
 	-cp -r src/bin/ydm.png $(DESTDIR)$(PREFIX)/share/pixmaps/
 	-install src/bin/ydm.desktop $(DESTDIR)$(PREFIX)/share/applications/
+	-install src/bin/ydms.desktop $(DESTDIR)$(PREFIX)/share/applications/
 	+make -C src/core install
 	@echo "Makefile: ydm installed."
 
@@ -41,6 +42,7 @@ uninstall:
 	rm -rf $(DESTDIR)$(LIBDIR)/ydevicemanager
 	rm -rf $(DESTDIR)$(PREFIX)/share/ydevicemanager
 	rm -rf $(DESTDIR)$(PREFIX)/share/applications/ydm.desktop
+	rm -rf $(DESTDIR)$(PREFIX)/share/applications/ydms.desktop
 	rm -rf $(DESTDIR)$(PREFIX)/bin/ydm
 	rm -rf $(DESTDIR)$(PREFIX)/bin/ydm-cmd
 	rm -rf $(DESTDIR)$(PREFIX)/share/pixmaps/ydm.png

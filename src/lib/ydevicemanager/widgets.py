@@ -2,9 +2,9 @@
 # -*- coding:utf-8 -*-
 
 import gtk
-import locale
+import math
 import cairo
-from math import pi
+import locale
 from globals import *
 import gettext
 gettext.textdomain('ydm')
@@ -24,6 +24,7 @@ class BaseFucn:
         window.set_title(_("Device Manager"))
 
         #window.set_resizable(False)
+        self.width, self.height = DEFAULT_WIDTH, DEFAULT_HEIGHT
         window.set_decorated(False)
         window.set_size_request(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         window.set_app_paintable(True)
@@ -32,10 +33,10 @@ class BaseFucn:
         window.set_events(gtk.gdk.ALL_EVENTS_MASK)
 
         window.connect("destroy", self.destroy)
-        window.connect("size-allocate", self.size_allocate_event)
+        window.connect("expose_event", self.expose)
         window.connect("motion-notify-event", self.motion_notify)
-        window.connect('button-press-event', self.resize_window)
-
+        window.connect("button-press-event", self.resize_window)
+    
         # supports alpha channels
         screen = window.get_screen()
         colormap = screen.get_rgba_colormap()
@@ -47,10 +48,12 @@ class BaseFucn:
         return window
 
     def destroy(self, widget):
+
         gtk.widget_pop_colormap()
 	gtk.main_quit()
 
     def motion_notify(self, widget, event):
+
         (x, y) = widget.get_pointer()
         w, h = widget.allocation.width, widget.allocation.height
         
@@ -95,45 +98,91 @@ class BaseFucn:
             self.window.begin_resize_drag(self.has_cursor, event.button, \
             int(event.x_root), int(event.y_root), event.time)
 
-    def size_allocate_event(self, widget, allocation):
+    def expose(self, widget, event):
 
-        w, h = allocation.width, allocation.height
-        bitmap = gtk.gdk.Pixmap(None, w, h, 1)
-        cr = bitmap.cairo_create()
+        w, h = widget.allocation.width, widget.allocation.height
+        ctx = widget.window.cairo_create()
+        
+	# clear context
+	self.clear_cairo(ctx)
 
-        # Clear the bitmap
-        cr.set_source_rgb(0.0, 0.0, 0.0)
-        cr.set_operator(cairo.OPERATOR_CLEAR)
-        cr.paint()
+        #draw shadow
+        self.draw_shadow(ctx, 0, 0, w - S*2, h - S, S, [0, 0, 0, 0.2])
+        
+        return False
 
-        # Draw our shape into the bitmap using cairo
-        cr.set_source_rgb(1.0, 1.0, 1.0)
-        cr.set_operator(cairo.OPERATOR_SOURCE)
-        self.draw_border(cr, 0, 0, w, h, R)
-        cr.fill()
+    def clear_cairo (self, ctx):
+	"""Fills the given cairo.Context with fully transparent white."""
+	ctx.save()
+	ctx.set_source_rgba(0.1, 0.1, 0.1, 0)
+	ctx.set_operator(cairo.OPERATOR_SOURCE)
+	ctx.paint()
+	ctx.restore()
 
-        # Set the window shape
-        widget.shape_combine_mask(bitmap, 0, 0)
+    def draw_shadow(self, ctx, x, y, w, h, shadow_size, col):
+        '''Drawing lessons from screenlets'''
+	s = shadow_size
+	r = s
+	rr = r+s
+	h = h-r
+	if h < 2*r: h = 2*r
 
-    def draw_border(self, cr, x, y, width, height, r):
+	ctx.save()
+	ctx.translate(x,y)
 
-	cr.move_to(x + r, y)
-	cr.line_to(x + width - r, y)
+	# Top Left
+	self.draw_quadrant_shadow(ctx, rr, rr, 0, rr, 0, col)
+	# Left
+	self.draw_side_shadow(ctx, 0, rr, r+s, h-2*r, 0, col)
+	# Bottom Left
+	self.draw_quadrant_shadow(ctx, rr, h-r+s, 0, rr, 2, col)
+	# Bottom
+	self.draw_side_shadow(ctx, rr, h-r+s, w-2*r, s+r, 3, col)
+	# Bottom Right
+	self.draw_quadrant_shadow(ctx, w-r+s, h-r+s, 0, rr, 3, col)
+	# Right
+	self.draw_side_shadow(ctx, w-r+s, rr, s+r, h-2*r, 1, col)
+	# Top Right
+	self.draw_quadrant_shadow(ctx, w-r+s, rr, 0, rr, 1, col)
+	# Top
+	self.draw_side_shadow(ctx, rr, 0, w-2*r, s+r, 2, col)
 
-	cr.move_to(x + width, y + r)
-	cr.line_to(x + width, y + height)
+	ctx.restore()
 
-	cr.move_to(x + width, y + height)
-	cr.line_to(x, y + height)
+    def draw_quadrant_shadow(self, ctx, x, y, from_r, to_r, quad, col):
 
-	cr.move_to(x, y + height)
-	cr.line_to(x, y + r)
+        gradient = cairo.RadialGradient(x,y,from_r,x,y,to_r)
+	gradient.add_color_stop_rgba(0,col[0],col[1],col[2],col[3])
+	gradient.add_color_stop_rgba(1,col[0],col[1],col[2],0)
+	ctx.set_source(gradient)
+	ctx.new_sub_path()
+	if quad==0: ctx.arc(x,y,to_r, -math.pi, -math.pi/2)
+	elif quad==1: ctx.arc(x,y,to_r, -math.pi/2, 0)
+	elif quad==2: ctx.arc(x,y,to_r, math.pi/2, math.pi)
+	elif quad==3: ctx.arc(x,y,to_r, 0, math.pi/2)
+	ctx.line_to(x,y)
+	ctx.close_path()
+	ctx.fill()
 
-	cr.arc(x + r, y + r, r, pi, 3 * pi / 2)
-	cr.arc(x + width - r, y + r, r, 3 * pi / 2, 2 * pi)
-	cr.arc(x + width - r, y + height - r, r, 0, pi / 2)
-	cr.arc(x + r, y + height - r, r, pi / 2, pi)
+    # side: 0 - left, 1 - right, 2 - top, 3 - bottom
+    def draw_side_shadow(self, ctx, x, y, w, h, side, col):
 
+        gradient = None
+	if side==0:
+		gradient = cairo.LinearGradient(x+w,y,x,y)
+	elif side==1:
+		gradient = cairo.LinearGradient(x,y,x+w,y)
+	elif side==2:
+		gradient = cairo.LinearGradient(x,y+h,x,y)
+	elif side==3:
+		gradient = cairo.LinearGradient(x,y,x,y+h)
+	if gradient:
+		gradient.add_color_stop_rgba(0,col[0],col[1],col[2],col[3])
+		gradient.add_color_stop_rgba(1,col[0],col[1],col[2],0)
+		ctx.set_source(gradient)
+	ctx.rectangle(x,y,w,h)
+	ctx.fill()
+        
     def load_wait(self, base, txt):
 
         ebox = gtk.EventBox()
@@ -153,14 +202,6 @@ class BaseFucn:
 
         ebox.show_all()
         return ebox
-
-        '''
-        self.progressbar = gtk.ProgressBar()
-        self.n = 0
-        self.progressbar.set_fraction(0)
-        self.progressbar.set_size_request(400,-1)
-        waitbox.pack_start(self.progressbar)
-        '''
 
     def define_align(self, widget, xa=0.0, ya=0.0, xc=0.0, yc=0.0):
 
@@ -424,8 +465,10 @@ class ToolBar(gtk.EventBox, BaseFucn):
     def max_window(self, widget):
 	if self.has_max:
             self.base.window.maximize()
+            self.base.align.set_padding(0, 0, 0, 0)
 	else:
             self.base.window.unmaximize()
+            self.base.align.set_padding(2*S, 2*S, 2*S, 2*S)
 
 	self.has_max = not self.has_max
 
@@ -479,7 +522,6 @@ class ToolButton(gtk.HBox, BaseFucn):
 
         button.connect("pressed", self.select_page, pageid)
 	button.connect("expose_event", self.expose_tool, txt, iconpath, h_pixbuf, p_pixbuf, pageid, self.get_pageid)
-
 	return button
 
     def select_page(self, widget, pageid):
@@ -502,29 +544,35 @@ class ToggleButton(gtk.VBox, BaseFucn):
         align = self.define_align(button_box, 1.0)
         self.add(align)
 
-        min_button = self.draw_button(ICON + "min_n.png", ICON + "min_h.png", ICON + "min_p.png", mincallback)
-        button_box.pack_start(min_button, False, False)
+        self.min_button = self.draw_button(ICON + "min_n.png", ICON + "min_h.png", ICON + "min_p.png", mincallback)
+        button_box.pack_start(self.min_button, False, False)
 
-        max_button = self.draw_button(ICON + "max_n.png", ICON + "max_h.png", ICON + "max_p.png", maxcallback, flag=True)
-        button_box.pack_start(max_button, False, False)
+        self.max_button = self.draw_button(ICON + "max_n.png", ICON + "max_h.png", ICON + "max_p.png", maxcallback)
+        button_box.pack_start(self.max_button, False, False)
 
-        close_button = self.draw_button(ICON + "close_n.png", ICON + "close_h.png", ICON + "close_p.png", closecallback)
-        button_box.pack_start(close_button, False, False)
+        self.close_button = self.draw_button(ICON + "close_n.png", ICON + "close_h.png", ICON + "close_p.png", closecallback)
+        button_box.pack_start(self.close_button, False, False)
 
-    def draw_button(self, n_bg, h_bg, p_bg, callback, flag=None):
+    def draw_button(self, n_bg, h_bg, p_bg, callback):
 
-        has_max = self.get_hasmax()
-        if not has_max and flag:
-            n_pixbuf, h_pixbuf, p_pixbuf = self.set_pixbuf(ICON + "max_nn.png", ICON + "max_hh.png", ICON + "max_pp.png")
-        else:
-            n_pixbuf, h_pixbuf, p_pixbuf = self.set_pixbuf(n_bg, h_bg, p_bg)
+        n_pixbuf, h_pixbuf, p_pixbuf = self.set_pixbuf(n_bg, h_bg, p_bg)
 
         button = gtk.Button()
         button.set_size_request(n_pixbuf.get_width(), n_pixbuf.get_height())
 
         button.connect("clicked", callback)
-	button.connect("expose_event", self.expose_button, n_pixbuf, h_pixbuf, p_pixbuf)
+	button.connect("expose_event", self.expose_draw, n_pixbuf, h_pixbuf, p_pixbuf)
         return button
+
+    def expose_draw(self, widget, event, n_pixbuf, h_pixbuf, p_pixbuf, flag=None):
+
+        has_max = self.get_hasmax()
+        if not has_max and widget == self.max_button:
+            n_pixbuf, h_pixbuf, p_pixbuf = self.set_pixbuf(ICON + "max_nn.png", ICON + "max_hh.png", ICON + "max_pp.png")
+
+        self.expose_button(widget, event, n_pixbuf, h_pixbuf, p_pixbuf)
+
+        return True
 
 class StatusBar(gtk.EventBox, BaseFucn):
 
