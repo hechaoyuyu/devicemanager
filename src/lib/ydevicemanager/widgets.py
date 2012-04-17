@@ -586,7 +586,7 @@ class ToggleButton(gtk.VBox, BaseFucn):
 
         button_box = gtk.HBox()
         align = self.define_align(button_box, 1.0)
-        align.set_padding(2, 0, 0, 2)
+        align.set_padding(6, 0, 0, 5)
         self.add(align)
 
         self.min_button = self.draw_button(ICON + "min_n.png", ICON + "min_h.png", ICON + "min_p.png", mincallback)

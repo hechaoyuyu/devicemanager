@@ -245,6 +245,9 @@ msgstr "飞利浦"
 msgid "Pioneer"
 msgstr "先锋"
 
+msgid "PLDS"
+msgstr "飞利浦建兴"
+
 msgid "Panasonic"
 msgstr "松下"
 

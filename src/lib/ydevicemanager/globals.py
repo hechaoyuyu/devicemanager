@@ -95,6 +95,7 @@ VENDORS = {
     "QUANTUM":["QUANTUM.jpg", "www.quantum.com", "Quantum"],
     #光驱产商
     "PLDS":["PLDS.jpg", "www.pldsnet.com", "PLDS"],
+    "PBDS":["PLDS.jpg", "www.pldsnet.com", "PLDS"],
     "HL-DT-ST":["LG.jpg", "www.lge.com", "LG"],
     "OPTIARC":["SONY.jpg", "www.sony-optiarc.com", "SONY"],
     "TSSTCORP":["TSSTCORP.jpg", "www.tsstorage.com", "TSSTcorp"],
