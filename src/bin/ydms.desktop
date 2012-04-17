@@ -9,5 +9,5 @@ Terminal=false
 X-MultipleArgs=false
 Type=Application
 StartupNotify=true
-Categories=GNOME;GTK;Settings;System
+Categories=GNOME;GTK;System
 
