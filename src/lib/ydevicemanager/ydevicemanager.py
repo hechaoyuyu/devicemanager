@@ -53,16 +53,18 @@ class DeviceManger(BaseFucn):
         self.pcid = {}
         self.lock = False
         self.has_tap = None
-        self.mainbox = gtk.VBox()
 
+        self.mainbox = gtk.VBox()
+        self.framebox = gtk.VBox()
+        
         # Init gtk window
-        self.window = self.initwindow()
+        self.window = InitWindow()
         
         # Create toolbar
         self.toolbar = ToolBar(self)
         self.mainbox.pack_start(self.toolbar, False)
 
-        self.framebox = gtk.VBox()
+        # content box
         self.mainbox.pack_start(self.framebox)
 
         # statusbar

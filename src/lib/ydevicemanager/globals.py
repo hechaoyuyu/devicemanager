@@ -5,7 +5,7 @@
 # hechao <hechao@115.com>, 2011.
 import os
 
-R = 4
+R = 15
 D = 10
 S = 6
 DEV_ID = 0

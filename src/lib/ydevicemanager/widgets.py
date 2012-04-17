@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import gtk
-import math
+from math import pi
 import cairo
 import locale
 from globals import *
@@ -13,111 +13,33 @@ def _(s):
 
 
 class BaseFucn:
-
-    has_cursor = None
-
-    def initwindow(self):
-
-        window = gtk.Window()
-        window.set_position(gtk.WIN_POS_CENTER_ALWAYS)
-        gtk.window_set_default_icon_from_file(ICON + "logo.png")
-        window.set_title(_("Device Manager"))
-
-        #window.set_resizable(False)
-        self.width, self.height = DEFAULT_WIDTH, DEFAULT_HEIGHT
-        window.set_decorated(False)
-        window.set_size_request(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-        window.set_app_paintable(True)
-
-        # receive all event masks
-        window.set_events(gtk.gdk.ALL_EVENTS_MASK)
-
-        window.connect("destroy", self.destroy)
-        window.connect("expose_event", self.expose)
-        window.connect("motion-notify-event", self.motion_notify)
-        window.connect("button-press-event", self.resize_window)
-    
-        # supports alpha channels
-        screen = window.get_screen()
-        colormap = screen.get_rgba_colormap()
-        if colormap:
-            gtk.widget_set_default_colormap(colormap)
-
-        window.set_geometry_hints(None, 600, 400)
-
-        return window
-
-    def destroy(self, widget):
-
-        gtk.widget_pop_colormap()
-	gtk.main_quit()
-
-    def motion_notify(self, widget, event):
-
-        (x, y) = widget.get_pointer()
-        w, h = widget.allocation.width, widget.allocation.height
         
-        if (x < D) and (y < D):
-            # top left
-            self.has_cursor = gtk.gdk.WINDOW_EDGE_NORTH_WEST
-            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.TOP_LEFT_CORNER))
-        elif (D < x < w - D - 120) and (y < D):
-            # top side
-            self.has_cursor = gtk.gdk.WINDOW_EDGE_NORTH
-            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.TOP_SIDE))
-        #elif (x > w - D) and (y < D):
-        #    # top right
-        #    self.has_cursor = gtk.gdk.WINDOW_EDGE_NORTH_EAST
-        #    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.TOP_RIGHT_CORNER))
-        elif (x > w - D) and (D + 40 < y < h - D):
-            # right side
-            self.has_cursor = gtk.gdk.WINDOW_EDGE_EAST
-            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.RIGHT_SIDE))
-        elif (x > w - D) and (y > h - D):
-            # bottom right
-            self.has_cursor = gtk.gdk.WINDOW_EDGE_SOUTH_EAST
-            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.BOTTOM_RIGHT_CORNER))
-        elif (D < x < w - D) and (y > h - D):
-            # bottom side
-            self.has_cursor = gtk.gdk.WINDOW_EDGE_SOUTH
-            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.BOTTOM_SIDE))
-        elif (x < D) and (h - D < y < h):
-            # bottom left
-            self.has_cursor = gtk.gdk.WINDOW_EDGE_SOUTH_WEST
-            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.BOTTOM_LEFT_CORNER))
-        elif (x < D) and (D < y < h - D):
-            # left side
-            self.has_cursor = gtk.gdk.WINDOW_EDGE_WEST
-            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.LEFT_SIDE))
-        else:
-            widget.window.set_cursor(None)
-            self.has_cursor = None
+    def draw_border(self, cr, x, y, width, height, r):
 
-    def resize_window(self, widget, event):
-        if self.has_cursor:
-            self.window.begin_resize_drag(self.has_cursor, event.button, \
-            int(event.x_root), int(event.y_root), event.time)
+	cr.move_to(x + r, y)
+	cr.line_to(x + width - r, y)
 
-    def expose(self, widget, event):
+	cr.move_to(x + width, y + r)
+	cr.line_to(x + width, y + height)
 
-        w, h = widget.allocation.width, widget.allocation.height
-        ctx = widget.window.cairo_create()
-        
-	# clear context
-	self.clear_cairo(ctx)
+	cr.move_to(x + width, y + height)
+	cr.line_to(x, y + height)
 
-        #draw shadow
-        self.draw_shadow(ctx, 0, 0, w - S*2, h - S, S, [0, 0, 0, 0.2])
-        
-        return False
+	cr.move_to(x, y + height)
+	cr.line_to(x, y + r)
+
+	cr.arc(x + r, y + r, r, pi, 3 * pi / 2)
+	cr.arc(x + width - r, y + r, r, 3 * pi / 2, 2 * pi)
+	cr.arc(x + width - r, y + height - r, r, 0, pi / 2)
+	cr.arc(x + r, y + height - r, r, pi / 2, pi)
 
     def clear_cairo (self, ctx):
 	"""Fills the given cairo.Context with fully transparent white."""
-	ctx.save()
-	ctx.set_source_rgba(0.1, 0.1, 0.1, 0)
+	#ctx.save()
+	ctx.set_source_rgba(1.0, 1.0, 1.0, 1) #set_source_rgba(0.1, 0.1, 0.1, 0) no size-allocate
 	ctx.set_operator(cairo.OPERATOR_SOURCE)
 	ctx.paint()
-	ctx.restore()
+	#ctx.restore()
 
     def draw_shadow(self, ctx, x, y, w, h, shadow_size, col):
         '''Drawing lessons from screenlets'''
@@ -151,16 +73,16 @@ class BaseFucn:
 
     def draw_quadrant_shadow(self, ctx, x, y, from_r, to_r, quad, col):
 
-        gradient = cairo.RadialGradient(x,y,from_r,x,y,to_r)
-	gradient.add_color_stop_rgba(0,col[0],col[1],col[2],col[3])
-	gradient.add_color_stop_rgba(1,col[0],col[1],col[2],0)
+        gradient = cairo.RadialGradient(x, y, from_r, x, y, to_r)
+	gradient.add_color_stop_rgba(0, col[0], col[1], col[2], col[3])
+	gradient.add_color_stop_rgba(1, col[0], col[1], col[2], 0)
 	ctx.set_source(gradient)
 	ctx.new_sub_path()
-	if quad==0: ctx.arc(x,y,to_r, -math.pi, -math.pi/2)
-	elif quad==1: ctx.arc(x,y,to_r, -math.pi/2, 0)
-	elif quad==2: ctx.arc(x,y,to_r, math.pi/2, math.pi)
-	elif quad==3: ctx.arc(x,y,to_r, 0, math.pi/2)
-	ctx.line_to(x,y)
+	if quad == 0: ctx.arc(x, y, to_r, -pi, -pi/2)
+	elif quad == 1: ctx.arc(x, y, to_r, -pi/2, 0)
+	elif quad == 2: ctx.arc(x, y, to_r, pi/2, pi)
+	elif quad == 3: ctx.arc(x , y, to_r, 0, pi/2)
+	ctx.line_to(x, y)
 	ctx.close_path()
 	ctx.fill()
 
@@ -168,19 +90,19 @@ class BaseFucn:
     def draw_side_shadow(self, ctx, x, y, w, h, side, col):
 
         gradient = None
-	if side==0:
-		gradient = cairo.LinearGradient(x+w,y,x,y)
-	elif side==1:
-		gradient = cairo.LinearGradient(x,y,x+w,y)
-	elif side==2:
-		gradient = cairo.LinearGradient(x,y+h,x,y)
-	elif side==3:
-		gradient = cairo.LinearGradient(x,y,x,y+h)
+	if side == 0:
+		gradient = cairo.LinearGradient(x+w, y, x, y)
+	elif side == 1:
+		gradient = cairo.LinearGradient(x, y, x+w, y)
+	elif side == 2:
+		gradient = cairo.LinearGradient(x, y+h, x, y)
+	elif side == 3:
+		gradient = cairo.LinearGradient(x, y, x, y+h)
 	if gradient:
-		gradient.add_color_stop_rgba(0,col[0],col[1],col[2],col[3])
-		gradient.add_color_stop_rgba(1,col[0],col[1],col[2],0)
+		gradient.add_color_stop_rgba(0, col[0], col[1], col[2], col[3])
+		gradient.add_color_stop_rgba(1, col[0], col[1], col[2], 0)
 		ctx.set_source(gradient)
-	ctx.rectangle(x,y,w,h)
+	ctx.rectangle(x, y, w, h)
 	ctx.fill()
         
     def load_wait(self, base, txt):
@@ -427,6 +349,128 @@ class BaseFucn:
         return n_pixbuf, h_pixbuf, p_pixbuf
 
 
+class InitWindow(gtk.Window, BaseFucn):
+
+    def __init__(self):
+        gtk.Window.__init__(self)
+
+        self.has_cursor = None
+
+        self.set_position(gtk.WIN_POS_CENTER_ALWAYS)
+        gtk.window_set_default_icon_from_file(ICON + "logo.png")
+        self.set_title(_("Device Manager"))
+
+        #window.set_resizable(False)
+        self.set_decorated(False)
+        self.set_size_request(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+        self.set_app_paintable(True)
+
+        # receive all event masks
+        self.set_events(gtk.gdk.ALL_EVENTS_MASK)
+
+        self.connect("destroy", self.destroy)
+        self.connect("expose_event", self.expose)
+        self.connect("size-allocate", self.size_allocate_event)
+        self.connect("motion-notify-event", self.motion_notify)
+        self.connect("button-press-event", self.resize_window)
+
+        # supports alpha channels
+        screen = self.get_screen()
+        colormap = screen.get_rgba_colormap()
+        if colormap:
+            gtk.widget_set_default_colormap(colormap)
+
+        self.set_geometry_hints(None, 600, 400)
+
+    def destroy(self, widget):
+        gtk.widget_pop_colormap()
+	gtk.main_quit()
+
+    def expose(self, widget, event):
+
+        w, h = widget.allocation.width, widget.allocation.height
+        ctx = widget.window.cairo_create()
+	# clear context
+	self.clear_cairo(ctx)
+        #draw shadow
+        self.draw_shadow(ctx, 0, 0, w - S*2, h - S, S, [0, 0, 0, 0.2])
+
+        return False
+
+    def size_allocate_event(self, widget, allocation):
+
+        self.queue_draw()
+        r = R
+        if self.window:
+            state = self.window.get_state()
+            if state == gtk.gdk.WINDOW_STATE_MAXIMIZED:
+                r = 0
+
+        w, h = allocation.width, allocation.height
+        bitmap = gtk.gdk.Pixmap(None, w, h, 1)
+        cr = bitmap.cairo_create()
+
+        # Clear the bitmap
+        cr.set_source_rgb(0.0, 0.0, 0.0)
+        cr.set_operator(cairo.OPERATOR_CLEAR)
+        cr.paint()
+
+        # Draw our shape into the bitmap using cairo
+        cr.set_source_rgb(1.0, 1.0, 1.0)
+        cr.set_operator(cairo.OPERATOR_SOURCE)
+        self.draw_border(cr, 0, 0, w, h, r)
+        cr.fill()
+
+        # Set the window shape
+        widget.shape_combine_mask(bitmap, 0, 0)
+
+    def motion_notify(self, widget, event):
+
+        (x, y) = widget.get_pointer()
+        w, h = widget.allocation.width, widget.allocation.height
+
+        if (x < D) and (y < D):
+            # top left
+            self.has_cursor = gtk.gdk.WINDOW_EDGE_NORTH_WEST
+            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.TOP_LEFT_CORNER))
+        elif (D < x < w - D - 120) and (y < D):
+            # top side
+            self.has_cursor = gtk.gdk.WINDOW_EDGE_NORTH
+            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.TOP_SIDE))
+        #elif (x > w - D) and (y < D):
+        #    # top right
+        #    self.has_cursor = gtk.gdk.WINDOW_EDGE_NORTH_EAST
+        #    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.TOP_RIGHT_CORNER))
+        elif (x > w - D) and (D + 40 < y < h - D):
+            # right side
+            self.has_cursor = gtk.gdk.WINDOW_EDGE_EAST
+            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.RIGHT_SIDE))
+        elif (x > w - D) and (y > h - D):
+            # bottom right
+            self.has_cursor = gtk.gdk.WINDOW_EDGE_SOUTH_EAST
+            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.BOTTOM_RIGHT_CORNER))
+        elif (D < x < w - D) and (y > h - D):
+            # bottom side
+            self.has_cursor = gtk.gdk.WINDOW_EDGE_SOUTH
+            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.BOTTOM_SIDE))
+        elif (x < D) and (h - D < y < h):
+            # bottom left
+            self.has_cursor = gtk.gdk.WINDOW_EDGE_SOUTH_WEST
+            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.BOTTOM_LEFT_CORNER))
+        elif (x < D) and (D < y < h - D):
+            # left side
+            self.has_cursor = gtk.gdk.WINDOW_EDGE_WEST
+            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.LEFT_SIDE))
+        else:
+            widget.window.set_cursor(None)
+            self.has_cursor = None
+
+    def resize_window(self, widget, event):
+        if self.has_cursor:
+            self.window.begin_resize_drag(self.has_cursor, event.button, \
+            int(event.x_root), int(event.y_root), event.time)
+
+
 class ToolBar(gtk.EventBox, BaseFucn):
     
     def __init__(self, ydmg):
@@ -542,6 +586,7 @@ class ToggleButton(gtk.VBox, BaseFucn):
 
         button_box = gtk.HBox()
         align = self.define_align(button_box, 1.0)
+        align.set_padding(2, 0, 0, 2)
         self.add(align)
 
         self.min_button = self.draw_button(ICON + "min_n.png", ICON + "min_h.png", ICON + "min_p.png", mincallback)

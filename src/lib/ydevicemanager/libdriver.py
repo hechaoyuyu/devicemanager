@@ -6,9 +6,7 @@ __date__ ="$2012-3-8 21:20:40$"
 import gtk
 import pango
 import gobject
-from sets import Set
 from threading import Thread
-
 from globals import *
 from widgets import BaseFucn
 from drivers import Driver
@@ -196,7 +194,7 @@ class DriverContent(gtk.ScrolledWindow, BaseFucn):
             vbox.pack_start(overpage)
 
         for key in dri_list.keys():
-            for dri_tuple in list(Set(dri_list[key])):
+            for dri_tuple in list(set(dri_list[key])):
                 id = base.pcid.get(key)
                 if id:
                     dri_item = DriverItem(id, dri_tuple)
