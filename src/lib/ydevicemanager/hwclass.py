@@ -38,7 +38,7 @@ class Computer(gtk.VBox, BaseFucn):
     def title_box(self, text):
 
 	label = gtk.Label()
-        label.set_markup("<span foreground='#1C242D' font_desc='11'>%s</span>" %text)
+        label.set_markup("<span foreground='#1C242D' font_desc='10'><b>%s</b></span>" %text)
 
         hbox = gtk.HBox()
 	hbox.pack_start(label, False)
@@ -63,7 +63,7 @@ class Computer(gtk.VBox, BaseFucn):
 
             gobject.timeout_add(2000, self.updates, record)
             
-        align = self.box_align(hbox, 12, 20)
+        align = self.box_align(hbox, 8, 20)
 	self.pack_start(align, False)
 
     def updates(self, record):

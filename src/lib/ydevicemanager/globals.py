@@ -118,6 +118,7 @@ VENDORS = {
     "PRIMAX":["PRIMAX.jpg", "www.primax.com.cn", "Primax"],
     "PIXART":["PIXART.jpg", "www.pixart.com.tw", "Pixart"],
     "TRUST":["TRUST.jpg", "www.trust.com", "Trust"],
+    "1BCF":["RAPOO.jpg", "www.rapoo.com", "Rapoo"],
     "AVAGO":["AVAGO.jpg", "www.avagotech.cn", "Avago"],
     "MICROSOFT":["MICROSOFT.jpg", "www.microsoft.com", "Microsoft"],
     #键盘产商
