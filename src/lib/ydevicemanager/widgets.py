@@ -41,7 +41,7 @@ class BaseFucn:
 	ctx.paint()
 	#ctx.restore()
 
-    def draw_shadow(self, ctx, x, y, w, h, shadow_size, col):
+    def draw_shadow(self, ctx, w, h, shadow_size, col):
         '''Drawing lessons from screenlets'''
 	s = shadow_size
 	r = s
@@ -49,8 +49,8 @@ class BaseFucn:
 	h = h-r
 	if h < 2*r: h = 2*r
 
-	ctx.save()
-	ctx.translate(x,y)
+	#ctx.save()
+	#ctx.translate(x, y)
 
 	# Top Left
 	self.draw_quadrant_shadow(ctx, rr, rr, 0, rr, 0, col)
@@ -69,7 +69,7 @@ class BaseFucn:
 	# Top
 	self.draw_side_shadow(ctx, rr, 0, w-2*r, s+r, 2, col)
 
-	ctx.restore()
+	#ctx.restore()
 
     def draw_quadrant_shadow(self, ctx, x, y, from_r, to_r, quad, col):
 
@@ -167,7 +167,7 @@ class BaseFucn:
 	font_size = 14
 	x_font = x + w_bg / 2 - font_size * 2
 	y_font = y + (h_bg + h_icon) / 2 + 8
-	self.draw_font(cr, txt, font_size, "#FFFFFF", x_font, y_font)
+	self.draw_font(cr, txt, font_size, 1.0, x_font, y_font)
 
 	if widget.get_child() != None:
 	    widget.propagate_expose(widget.get_child(), event)
@@ -181,20 +181,20 @@ class BaseFucn:
 
 	if widget.state == gtk.STATE_NORMAL:
 	    if select_id == key:
-		color = "#FFFFFF"
+		color = 1.0 #white
 		pixbuf = p_pixbuf
 	    else:
-		color = "#000000"
+		color = 0.0 #black
 		pixbuf = None
 	elif widget.state == gtk.STATE_PRELIGHT:
 	    if select_id == key:
-		color = "#FFFFFF"
+		color = 1.0
 		pixbuf = p_pixbuf
 	    else:
-		color = "#000000"
+		color = 0.0
 		pixbuf = h_pixbuf
 	elif widget.state == gtk.STATE_ACTIVE:
-	    color = "#FFFFFF"
+	    color = 1.0
 	    pixbuf = p_pixbuf
 
 	cr = widget.window.cairo_create()
@@ -202,7 +202,7 @@ class BaseFucn:
 	w_bg, h_bg = widget.allocation.width, widget.allocation.height
 	x, y = widget.allocation.x, widget.allocation.y
 	if pixbuf != None:
-	    cr.set_source_pixbuf(pixbuf.scale_simple(w_bg, h_bg, gtk.gdk.INTERP_BILINEAR), x, y)
+	    cr.set_source_pixbuf(pixbuf, x, y)
 	    cr.paint()
 
 	w_icon, h_icon = icon.get_width(), icon.get_height()
@@ -220,9 +220,9 @@ class BaseFucn:
 
 	return True
 
-    def draw_font(self, cr, txt, font_size, color, x, y):
+    def draw_font(self, cr, txt, font_size, c, x, y):
 
-	cr.set_source_rgb(*self.select_color(color))
+	cr.set_source_rgb(c, c, c)#*self.select_color(color))
 	cr.select_font_face(DEFAULT_FONT, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 	cr.set_font_size(font_size)
 	cr.move_to(x, y)
@@ -348,6 +348,27 @@ class BaseFucn:
 
         return n_pixbuf, h_pixbuf, p_pixbuf
 
+    def draw_line(self):
+
+        widget = gtk.Image()
+        widget.set_size_request(1, -1)
+
+        widget.connect("expose_event", self.expose_image)
+        return widget
+
+    def expose_image(self, widget, event):
+        
+        rect = widget.allocation
+        w, h = rect.width, rect.height
+        x, y =  rect.x, rect.y
+
+        pixbuf = gtk.gdk.pixbuf_new_from_file(ICON + "line.png")
+	cr = widget.window.cairo_create()
+	cr.set_source_pixbuf(pixbuf.scale_simple(w, h, gtk.gdk.INTERP_BILINEAR), x, y)
+        cr.paint()
+
+        return True
+
 
 class InitWindow(gtk.Window, BaseFucn):
 
@@ -387,19 +408,17 @@ class InitWindow(gtk.Window, BaseFucn):
 	gtk.main_quit()
 
     def expose(self, widget, event):
-
+        '''shadow'''
         w, h = widget.allocation.width, widget.allocation.height
         ctx = widget.window.cairo_create()
 	# clear context
 	self.clear_cairo(ctx)
         #draw shadow
-        self.draw_shadow(ctx, 0, 0, w - S*2, h - S, S, [0, 0, 0, 0.2])
-
-        return False
+        self.draw_shadow(ctx, w - S*2, h - S, S, [0, 0, 0, 0.2])
 
     def size_allocate_event(self, widget, allocation):
-
         self.queue_draw()
+
         r = R
         if self.window:
             state = self.window.get_state()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-__author__="hechao"
-__date__ ="$2012-3-8 10:12:56$"
+#__author__="hechao"
+#__date__ ="$2012-3-8 10:12:56$"
 
 import os
 import gtk

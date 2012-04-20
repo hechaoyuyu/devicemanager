@@ -5,14 +5,15 @@
 # Copyright (C) 2011 YLMF, Inc.
 # hechao <hechao@115.com>, 2011.
 
-__author__="hechao"
-__date__ ="$2011-12-20 16:36:20$"
+#__author__="hechao"
+#__date__ ="$2011-12-20 16:36:20$"
 
 import gtk
 import time
 import os
 import pango
 import re
+import gobject
 import gettext
 from syscall import *
 from globals import *
@@ -55,16 +56,32 @@ class Computer(gtk.VBox, BaseFucn):
         hbox = gtk.HBox()
 	hbox.pack_start(label, False)
 
-	if record:
-	    label = gtk.Label()
-	    label.set_selectable(True)
-	    label.set_tooltip_text(record)
-	    text = _("Current temperature:")
-            label.set_markup("<span foreground='#1A3E88' font_desc='10'>%s</span>" %(text + record))
-	    hbox.pack_start(label, False)
+        if record:
+            self.temp = gtk.Label()
+            self.temp.set_selectable(True)
+            hbox.pack_start(self.temp, False)
 
+            gobject.timeout_add(2000, self.updates, record)
+            
         align = self.box_align(hbox, 12, 20)
 	self.pack_start(align, False)
+
+    def updates(self, record):
+        '''refresh temperature'''
+        if record == "cpu":
+            val = cpu_sensor()
+        else:
+            val = disk_sensor(record)
+        r = re.match("\d+",val)
+        if r:
+            if int(r.group()) >= 60:
+                val = "<span color='red'>%s</span>" %val
+
+	self.temp.set_tooltip_text(val)
+	text = _("Current temperature:")
+        self.temp.set_markup("<span foreground='#1A3E88' font_desc='10'>%s</span>" %(text + val))
+
+        return True
 
     def body_box(self, bodys):
 
@@ -282,7 +299,7 @@ class Cpu(Computer):
         Computer.__init__(self, product)
 
 	self.title_box(_(self.category) + _("Info"))
-	self.tag_box(_("Basic Info"), sensors())
+	self.tag_box(_("Basic Info"), "cpu")
 
         bodys = []
         bodys.append((_("cpu"), product))
@@ -326,6 +343,7 @@ class Cpu(Computer):
         self.logo = self.dev_logo(vendor, product)
 
         self.tag_box(_("Cache Info"))
+
 
 class Cache(Computer):
 
@@ -592,7 +610,7 @@ class Disk(Computer):
 	if description == "ATA Disk":
 	    dict = udisks(logicalname)
 
-	    self.tag_box(_("Basic Info"), dict.get("temp"))
+	    self.tag_box(_("Basic Info"), logicalname)#dict.get("temp"))
 
             bodys = []
 	    bodys.append((_("DProduct"), _(vendor) + " " + product))

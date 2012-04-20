@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #coding: utf-8
 
-__author__ = "hechao"
-__date__ = "$2012-2-22 13:16:58$"
+#__author__ = "hechao"
+#__date__ = "$2012-2-22 13:16:58$"
 
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop, threads_init

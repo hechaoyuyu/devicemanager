@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-__author__="hechao"
-__date__ ="$2012-3-8 21:20:40$"
+#__author__="hechao"
+#__date__ ="$2012-3-8 21:20:40$"
 
 import gtk
 import pango
@@ -371,7 +371,7 @@ class ActionButton(gtk.Button, BaseFucn):
                             gtk.STOCK_OK, gtk.RESPONSE_OK))
 
         dialog.set_resizable(False)
-        dialog.set_default_response(gtk.RESPONSE_OK)
+        dialog.set_default_response(gtk.RESPONSE_REJECT)
 
         warn_box = gtk.VBox()
         warn_box.show()

@@ -15,8 +15,8 @@
 # Ylmf Device Manager
 # This is free software made available under the GNU public license.
 
-__author__ = "hechao"
-__date__ = "$2011-11-14 13:25:06$"
+#__author__ = "hechao"
+#__date__ = "$2011-11-14 13:25:06$"
 
 import os
 import gtk
@@ -29,20 +29,27 @@ try:
     import pyudev.glib
 except:
     has_udev = False
+
 try:
     libc = ctypes.CDLL('libc.so.6')
     libc.prctl(15, 'ydm', 0, 0, 0)
 except:pass
+
 from globals import *
 from widgets import *
 from dbuscall import call_signal
 from libdevice import DeviceThread
 from libdriver import DriverThread
 
+try:
+    import psyco
+    psyco.log(TARGET_DIR + "/" + "profile")
+    psyco.profile()
+except:pass
+
 gettext.textdomain('ydm')
 def _(s):
     return gettext.gettext(s)
-
 
 class DeviceManger(BaseFucn):
 

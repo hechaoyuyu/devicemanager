@@ -345,7 +345,7 @@ msgid "Computer preview"
 msgstr "电脑概览"
 
 msgid "system"
-msgstr "电脑预览"
+msgstr "电脑概览"
 
 msgid "Basic Info"
 msgstr "基本信息"

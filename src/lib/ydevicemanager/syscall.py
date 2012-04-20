@@ -147,12 +147,22 @@ def udisks(dev):
 	unsect = re.findall("offline-uncorrectable.*(n/a|good)\s*(\d*)", info)
 	if unsect:
 	    ret["unsect"] = unsect[0][1]
-
     except:
         print >> sys.stderr, 'Command failed: udisks'
     return ret
 
-def sensors():
+def disk_sensor(dev):
+    try:
+	info = get_output('udisks --show-info %s' % dev)
+        temp = re.findall("temperature-celsius-2.*(n/a|good)\s*(\d*)", info)
+	if temp:
+	    temp = temp[0][1]
+	    return temp + record_sign()
+    except:
+        print >> sys.stderr, 'Command failed: udisks'
+    return ""
+
+def cpu_sensor():
     #info = get_output("lsmod")
     #coretemp = re.findall("coretemp",info)
     try:
