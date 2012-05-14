@@ -1,7 +1,6 @@
 #define _XOPEN_SOURCE
 #include "hw.h"
 #include "osutils.h"
-#include "config.h"
 #include "options.h"
 #include "heuristics.h"
 #include <cstring>
@@ -36,7 +35,6 @@ struct hwNode_i
     vector < string > features;
     vector < string > logicalnames;
     map < string, string > features_descriptions;
-    vector < resource > resources;
     map < string, string > config;
     map < string, value > hints;
 };
@@ -665,25 +663,6 @@ hwNode *hwNode::findChildByBusInfo(const string & businfo)
     return NULL;
 }
 
-hwNode *hwNode::findChildByResource(const hw::resource & r)
-{
-    if(!This)
-        return NULL;
-
-    if(this->usesResource(r))
-        return this;
-
-    for(unsigned int i = 0; i < This->children.size(); i++)
-    {
-        hwNode *result = This->children[i].findChildByResource(r);
-
-        if(result)
-            return result;
-    }
-
-    return NULL;
-}
-
 static string generateId(const string & radical,
         int count)
 {
@@ -1174,40 +1153,6 @@ void hwNode::merge(const hwNode & node)
         addHint(i->first, i->second);
 }
 
-void hwNode::addResource(const resource & r)
-{
-    if(!This)
-        return;
-
-    This->resources.push_back(r);
-}
-
-bool hwNode::usesResource(const resource & r) const
-{
-    if(!This)
-        return false;
-
-    for(size_t i = 0; i < This->resources.size(); i++)
-        if(r == This->resources[i])
-            return true;
-
-    return false;
-}
-
-vector < string > hwNode::getResources(const string & separator) const
-{
-    vector < string > result;
-
-    if(!This)
-        return result;
-
-    for(vector < resource >::iterator i = This->resources.begin();
-            i != This->resources.end(); i++)
-        result.push_back(i->asString(separator));
-
-    return result;
-}
-
 void hwNode::setWidth(unsigned int width)
 {
     if(This)
@@ -1261,7 +1206,6 @@ string hwNode::asXML(unsigned level)
     if(!This) return "";
 
     config = getConfigKeys();
-    resources = getResources("\" value=\"");
 
     if(level == 0)
     {
@@ -1283,7 +1227,7 @@ string hwNode::asXML(unsigned level)
             out << "<!-- GNU libc " << __GLIBC__ << " (" << escapecomment(version) << ") -->" << endl;
 #endif
         if(geteuid() != 0)
-            out << _("<!-- WARNING: not running as root -->") << endl;
+            out << "<!-- WARNING: not running as root -->" << endl;
 
         if(::enabled("output:list"))
             out << "<list>" << endl;
@@ -1563,268 +1507,6 @@ string hwNode::asXML(unsigned level)
     return out.str();
 }
 
-string hwNode::asString()
-{
-    string summary = "";
-    if(!This)
-        return "";
-
-    if(getClass() != hw::memory)
-        summary = getProduct(); // memory devices tend to have obscure product names
-    if(summary == "")
-        summary = getDescription();
-
-    if((getClass() == hw::memory) || (getClass() == hw::disk) || (getClass() == hw::storage) || (getClass() == hw::volume))
-    {
-        unsigned long long size = 0;
-        if(getClass() != hw::memory)
-        {
-            if(getCapacity())
-                size = getCapacity();
-            else
-            {
-                if(getSize())
-                    size = getSize();
-            }
-        }
-        else
-        {
-            if(getSize())
-                size = getSize();
-        }
-        if(size)
-            summary = (getClass() == hw::disk ? (decimalkilos(size) + "B") : kilobytes(size)) + " " + summary;
-    }
-
-    return summary;
-}
-
-struct hw::resource_i
-{
-    hw::hwResourceType type;
-
-    unsigned int ui1;
-    unsigned long ul1, ul2;
-    unsigned long long ull1, ull2;
-    bool b;
-
-    int refcount;
-};
-
-resource::resource()
-{
-    This = new struct resource_i;
-
-    if(This)
-    {
-        memset(This, 0, sizeof(*This));
-        This->type = none;
-        This->refcount = 1;
-    }
-}
-
-resource::~resource()
-{
-    if(This)
-    {
-        This->refcount--;
-
-        if(This->refcount <= 0)
-        {
-            delete This;
-            This = NULL;
-        }
-    }
-}
-
-resource::resource(const resource & r)
-{
-    This = r.This;
-
-    if(This)
-        This->refcount++;
-}
-
-resource & resource::operator =(const resource & r)
-{
-    if(this == &r)
-        return *this; // ignore self-affectation
-
-    if(This == r.This)
-        return *this; // both objects reference the same data
-
-    if(This)
-    {
-        This->refcount--;
-
-        if(This->refcount <= 0)
-        {
-            delete This;
-            This = NULL;
-        }
-    }
-
-    This = r.This;
-    if(This)
-        This->refcount++;
-
-    return *this;
-}
-
-resource resource::iomem(unsigned long long start,
-        unsigned long long end)
-{
-    resource r;
-
-    if(!r.This)
-        return r;
-
-    r.This->type = hw::iomem;
-    r.This->ull1 = start;
-    r.This->ull2 = end;
-
-    return r;
-}
-
-resource resource::ioport(unsigned long start,
-        unsigned long end)
-{
-    resource r;
-
-    if(!r.This)
-        return r;
-
-    r.This->type = hw::ioport;
-    r.This->ul1 = start;
-    r.This->ul2 = end;
-
-    return r;
-}
-
-resource resource::mem(unsigned long long start,
-        unsigned long long end, bool prefetchable)
-{
-    resource r;
-
-    if(!r.This)
-        return r;
-
-    r.This->type = hw::mem;
-    r.This->ull1 = start;
-    r.This->ull2 = end;
-    r.This->b = prefetchable;
-
-    return r;
-}
-
-resource resource::irq(unsigned int value)
-{
-    resource r;
-
-    if(!r.This)
-        return r;
-
-    r.This->type = hw::irq;
-    r.This->ui1 = value;
-
-    return r;
-}
-
-resource resource::dma(unsigned int value)
-{
-    resource r;
-
-    if(!r.This)
-        return r;
-
-    r.This->type = hw::dma;
-    r.This->ui1 = value;
-
-    return r;
-}
-
-string resource::asString(const string & separator) const
-{
-    char buffer[80];
-    string result = "";
-
-    if(!This)
-        return result;
-
-    strncpy(buffer, "", sizeof(buffer));
-
-    switch(This->type)
-    {
-        case hw::none:
-            result = _("(none)");
-            break;
-        case hw::dma:
-            result = _("dma") + separator;
-            snprintf(buffer, sizeof(buffer), "%d", This->ui1);
-            break;
-        case hw::irq:
-            result = _("irq") + separator;
-            snprintf(buffer, sizeof(buffer), "%d", This->ui1);
-            break;
-        case hw::iomem:
-            result = _("iomemory") + separator;
-            snprintf(buffer, sizeof(buffer), "%llx-%llx", This->ull1, This->ull2);
-            break;
-        case hw::mem:
-            result = _("memory") + separator;
-            snprintf(buffer, sizeof(buffer), "%llx-%llx", This->ull1, This->ull2);
-            if(This->b) strcat(buffer, _("(prefetchable)"));
-            break;
-        case hw::ioport:
-            result = _("ioport") + separator;
-            if(This->ul1 == This->ul2)
-                snprintf(buffer, sizeof(buffer), "%lx", This->ul1);
-            else
-                snprintf(buffer, sizeof(buffer), _("%lx(size=%ld)"), This->ul1, This->ul2 - This->ul1 + 1);
-            break;
-        default:
-            result = _("(unknown)");
-    }
-
-    return result + string(buffer);
-}
-
-bool resource::operator ==(const resource & r)
-const
-{
-    if(This == r.This)
-        return true;
-
-    if(!This || !r.This)
-        return false;
-
-    if(This->type != r.This->type)
-        return false;
-
-    switch(This->type)
-    {
-        case hw::dma:
-        case hw::irq:
-            return This->ui1 == r.This->ui1;
-            break;
-
-        case hw::iomem:
-        case hw::mem:
-            return((This->ull1 >= r.This->ull1)
-                    && (This->ull2 <= r.This->ull2)) || ((r.This->ull1 >= This->ull1)
-                    && (r.This->ull2 <= This->ull2));
-            break;
-
-        case hw::ioport:
-            return((This->ul1 >= r.This->ul1)
-                    && (This->ul1 <= r.This->ul2)) || ((r.This->ul1 >= This->ul1)
-                    && (r.This->ul1 <= This->ul2));
-            break;
-
-        default:return false;
-    }
-}
-
 struct hw::value_i
 {
     hw::hwValueType type;
@@ -1944,9 +1626,9 @@ string value::asString() const
         case hw::text:
             return This->s;
         case hw::boolean:
-            return This->b ? _("true") : _("false");
+            return This->b ? "true" : "false";
         case hw::nil:
-            return _("(nil)");
+            return "(nil)";
     };
 
     return "";

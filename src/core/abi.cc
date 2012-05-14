@@ -4,7 +4,6 @@
  *
  */
 
-#include "config.h"
 #include "abi.h"
 #include "osutils.h"
 #include <unistd.h>
@@ -44,7 +43,7 @@ bool scan_abi(hwNode & system)
 
   popd();
 
-  system.describeCapability("vsyscall32", _("32-bit processes"));
-  system.describeCapability("vsyscall64", _("64-bit processes"));
+  system.describeCapability("vsyscall32", "32-bit processes");
+  system.describeCapability("vsyscall64", "64-bit processes");
   return true;
 }

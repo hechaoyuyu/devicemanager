@@ -41,12 +41,6 @@ from dbuscall import call_signal
 from libdevice import DeviceThread
 from libdriver import DriverThread
 
-try:
-    import psyco
-    psyco.log(TARGET_DIR + "/" + "profile")
-    psyco.profile()
-except:pass
-
 gettext.textdomain('ydm')
 def _(s):
     return gettext.gettext(s)
@@ -148,7 +142,7 @@ class DeviceManger(BaseFucn):
             if hasattr(self, 'driver_page'):
                 if self.has_tap == "RETRY":
                     self.framebox.pack_start(self.load_wait(self, "Loading, please wait ..."))
-                    gobject.timeout_add(2000, driver_page)
+                    gobject.timeout_add(250, driver_page)
                 else:
                     self.framebox.pack_start(self.driver_page)
             else:

@@ -1,3 +1,5 @@
+#include <unistd.h>
+#include <stdio.h>
 #include "hw.h"
 #include "options.h"
 #include "mem.h"
@@ -9,17 +11,13 @@
 #include "pcmcia-legacy.h"
 #include "scsi.h"
 #include "network.h"
-#include "fb.h"
 #include "usb.h"
 #include "sysfs.h"
 #include "display.h"
 #include "cpufreq.h"
 #include "smp.h"
 #include "abi.h"
-#include <unistd.h>
-#include <stdio.h>
-
-void status(const char *);
+#include "status.h"
 
 bool scan_system(hwNode & system)
 {
@@ -77,9 +75,6 @@ bool scan_system(hwNode & system)
         status("Network interfaces");
         if(enabled("network"))
             scan_network(computer);
-        status("Framebuffer devices");
-        if(enabled("fb"))
-            scan_fb(computer);
         status("Display");
         if(enabled("display"))
             scan_display(computer);

@@ -15,7 +15,6 @@
  *
  */
 
-#include "config.h"
 #include "mem.h"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -120,7 +119,7 @@ bool scan_memory(hwNode & n)
     memory->addHint("icon", string("memory"));
 
     if (memory->getDescription() == "")
-      memory->setDescription(_("System Memory"));
+      memory->setDescription("System Memory");
 
     if (memory->getSize() > logicalmem)           // we already have a value
       return true;

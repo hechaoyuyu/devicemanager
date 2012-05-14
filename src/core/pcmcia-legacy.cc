@@ -901,7 +901,6 @@ static bool pcmcia_ident(int socket,
     ds_ioctl_arg_t arg;
     cistpl_vers_1_t *vers = &arg.tuple_parse.parse.version_1;
     cistpl_funcid_t *funcid = &arg.tuple_parse.parse.funcid;
-    config_info_t config;
     vector < string > product_info;
     hwNode device("pccard",
             hw::generic);
@@ -980,23 +979,6 @@ static bool pcmcia_ident(int socket,
 
     snprintf(buffer, sizeof(buffer), "Socket %d", socket);
     device.setSlot(buffer);
-
-    for(int fct = 0; fct < 4; fct++)
-    {
-        memset(&config, 0, sizeof(config));
-        config.Function = fct;
-        if(ioctl(fd, DS_GET_CONFIGURATION_INFO, &config) == 0)
-        {
-            if(config.AssignedIRQ != 0)
-                device.addResource(hw::resource::irq(config.AssignedIRQ));
-        }
-    }
-
-    //memset(&bind, 0, sizeof(bind));
-    //strcpy(bind.dev_info, "cb_enabler");
-    //bind.function = 0;
-    //ioctl(fd, DS_GET_NEXT_DEVICE, &bind);
-    //printf("%s : %s -> %d\n", bind.dev_info, bind.name, errno);
 
     device.setHandle(pcmcia_handle(socket));
     parent->addChild(device);

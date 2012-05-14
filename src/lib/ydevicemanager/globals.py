@@ -25,6 +25,7 @@ DBUS_IFACE = 'com.ylmf.ydm'
 DBUS_PATH = '/com/ylmf/ydm'
 
 HOME = os.path.expanduser("~")
+#HOME = os.environ['HOME']
 TARGET_DIR = HOME + "/.ydm"
 if not os.path.isdir(TARGET_DIR):
     #os.system("mkdir -p %s" %TARGET_DIR)

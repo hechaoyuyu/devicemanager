@@ -14,7 +14,6 @@
  *
  */
 
-#include "config.h"
 #include "network.h"
 #include "osutils.h"
 #include "sysfs.h"
@@ -206,31 +205,31 @@ static const char *hwname(int t)
   switch (t)
   {
     case ARPHRD_ETHER:
-      return _("Ethernet");
+      return "Ethernet";
     case ARPHRD_SLIP:
-      return _("SLIP");
+      return "SLIP";
     case ARPHRD_LOOPBACK:
-      return _("loopback");
+      return "loopback";
     case ARPHRD_FDDI:
-      return _("FDDI");
+      return "FDDI";
     case ARPHRD_IEEE1394:
-      return _("IEEE1394");
+      return "IEEE1394";
     case ARPHRD_IRDA:
-      return _("IRDA");
+      return "IRDA";
     case ARPHRD_PPP:
-      return _("PPP");
+      return "PPP";
     case ARPHRD_X25:
-      return _("X25");
+      return "X25";
     case ARPHRD_TUNNEL:
-      return _("IPtunnel");
+      return "IPtunnel";
     case ARPHRD_DLCI:
-      return _("Framerelay.DLCI");
+      return "Framerelay.DLCI";
     case ARPHRD_FRAD:
-      return _("Framerelay.AD");
+      return "Framerelay.AD";
     case ARPHRD_TUNNEL6:
-      return _("IP6tunnel");
+      return "IP6tunnel";
     case ARPHRD_SIT:
-      return _("IP6inIP4");
+      return "IP6inIP4";
     default:
       return "";
   }
@@ -367,15 +366,15 @@ bool scan_network(hwNode & n)
         string hwaddr = getmac((unsigned char *) ifr.ifr_hwaddr.sa_data);
         interface.addCapability(hwname(ifr.ifr_hwaddr.sa_family));
         if (ifr.ifr_hwaddr.sa_family >= 256)
-          interface.addCapability("logical", _("Logical interface"));
+          interface.addCapability("logical", "Logical interface");
         else
-          interface.addCapability("physical", _("Physical interface"));
+          interface.addCapability("physical", "Physical interface");
         interface.setDescription(string(hwname(ifr.ifr_hwaddr.sa_family)) +
           " interface");
         interface.setSerial(hwaddr);
 
         if (isVirtual(interface.getSerial()))
-          interface.addCapability("logical", _("Logical interface"));
+          interface.addCapability("logical", "Logical interface");
       }
 
 // check for wireless extensions
@@ -383,9 +382,9 @@ bool scan_network(hwNode & n)
       strncpy(buffer, interfaces[i].c_str(), sizeof(buffer));
       if (ioctl(fd, SIOCGIWNAME, &buffer) == 0)
       {
-        interface.addCapability("wireless", _("Wireless-LAN"));
+        interface.addCapability("wireless", "Wireless-LAN");
         interface.setConfig("wireless", hw::strip(buffer + IFNAMSIZ));
-        interface.setDescription(_("Wireless interface"));
+        interface.setDescription("Wireless interface");
         interface.addHint("icon", string("wifi"));
         interface.addHint("bus.icon", string("radio"));
       }
@@ -406,33 +405,33 @@ bool scan_network(hwNode & n)
       if (ioctl(fd, SIOCETHTOOL, &ifr) == 0)
       {
         if(ecmd.supported & SUPPORTED_TP)
-          interface.addCapability("tp", _("twisted pair"));
+          interface.addCapability("tp", "twisted pair");
         if(ecmd.supported & SUPPORTED_AUI)
-          interface.addCapability("aui", _("AUI"));
+          interface.addCapability("aui", "AUI");
         if(ecmd.supported & SUPPORTED_BNC)
-          interface.addCapability("bnc", _("BNC"));
+          interface.addCapability("bnc", "BNC");
         if(ecmd.supported & SUPPORTED_MII)
-          interface.addCapability("mii", _("Media Independant Interface"));
+          interface.addCapability("mii", "Media Independant Interface");
         if(ecmd.supported & SUPPORTED_FIBRE)
-          interface.addCapability("fibre",_( "optical fibre"));
+          interface.addCapability("fibre", "optical fibre");
         if(ecmd.supported & SUPPORTED_10baseT_Half)
         {
-          interface.addCapability("10bt", _("10Mbit/s"));
+          interface.addCapability("10bt", "10Mbit/s");
           interface.setCapacity(10000000L);
         }
         if(ecmd.supported & SUPPORTED_10baseT_Full)
         {
-          interface.addCapability("10bt-fd", _("10Mbit/s (full duplex)"));
+          interface.addCapability("10bt-fd", "10Mbit/s (full duplex)");
           interface.setCapacity(10000000L);
         }
         if(ecmd.supported & SUPPORTED_100baseT_Half)
         {
-          interface.addCapability("100bt", _("100Mbit/s"));
+          interface.addCapability("100bt", "100Mbit/s");
           interface.setCapacity(100000000L);
         }
         if(ecmd.supported & SUPPORTED_100baseT_Full)
         {
-          interface.addCapability("100bt-fd", _("100Mbit/s (full duplex)"));
+          interface.addCapability("100bt-fd", "100Mbit/s (full duplex)");
           interface.setCapacity(100000000L);
         }
         if(ecmd.supported & SUPPORTED_1000baseT_Half)
@@ -442,11 +441,11 @@ bool scan_network(hwNode & n)
         }
         if(ecmd.supported & SUPPORTED_1000baseT_Full)
         {
-          interface.addCapability("1000bt-fd", _("1Gbit/s (full duplex)"));
+          interface.addCapability("1000bt-fd", "1Gbit/s (full duplex)");
           interface.setCapacity(1000000000L);
         }
         if(ecmd.supported & SUPPORTED_Autoneg)
-          interface.addCapability("autonegotiation", _("Auto-negotiation"));
+          interface.addCapability("autonegotiation", "Auto-negotiation");
 
         switch(ecmd.speed)
         {
@@ -507,7 +506,7 @@ bool scan_network(hwNode & n)
       }
 
       if(sysfs::entry::byClass("net", interface.getLogicalName()).hassubdir("bridge"))
-        interface.addCapability("logical", _("Logical interface"));
+        interface.addCapability("logical", "Logical interface");
 
       if (hwNode * existing = n.findChildByBusInfo(interface.getBusInfo()))
       {

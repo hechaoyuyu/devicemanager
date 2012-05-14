@@ -346,3 +346,39 @@ def xz_file():
         return 0
     except:return 1
 
+def test_cpu():
+    try:
+        import lshw
+        return lshw.super_pi()
+    except:
+        print >> sys.stderr, 'calculating  failed!'
+    return ''
+
+def test_disk():
+    ret = {}
+    try:
+        os.chdir(TARGET_DIR)
+        '''生成测试样本'''
+        get_output('sysbench --test=fileio --num-threads=16 --file-total-size=3G --file-test-mode=rndrw prepare')
+        '''开始测试'''
+        info = get_output('sysbench --test=fileio --num-threads=16 --file-total-size=3G --file-test-mode=rndrw run')
+        tmp = re.findall("Read (\S*)\s*Written (\S*)", info)
+        '''清理临时文件'''
+        get_output('sysbench --test=fileio --num-threads=100 --file-total-size=5G --file-test-mode=rndrw cleanup')
+        if tmp:
+            ret["read"] = tmp[0][0]
+            ret["write"] = tmp[0][1]
+    except:
+        print 'sysbench --test=fileio failed!'
+
+    return ret
+
+def test_mem():
+    try:
+        import lshw
+        return lshw.stream_triad()
+    except:
+        return ''
+
+#print test_disk()
+

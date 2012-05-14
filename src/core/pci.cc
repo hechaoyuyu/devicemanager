@@ -1,4 +1,3 @@
-#include "config.h"
 #include "pci.h"
 #include "osutils.h"
 #include "options.h"
@@ -15,7 +14,7 @@
 
 #define PROC_BUS_PCI "/proc/bus/pci"
 #define SYS_BUS_PCI "/sys/bus/pci"
-#define PCIID_PATH "/usr/local/share/pci.ids:/usr/share/pci.ids:/etc/pci.ids:/usr/share/hwdata/pci.ids:/usr/share/misc/pci.ids"
+#define PCIID_PATH "/usr/share/pci.ids"
 
 #define PCI_CLASS_REVISION      0x08              /* High 24 bits are class, low 8 revision */
 #define PCI_VENDOR_ID           0x00    /* 16 bits */
@@ -543,16 +542,6 @@ static string get_device_description(long u1,
         return "";
 }
 
-static u_int32_t get_conf_long(struct pci_dev d,
-        unsigned int pos)
-{
-    if(pos > sizeof(d.config))
-        return 0;
-
-    return d.config[pos] | (d.config[pos + 1] << 8) |
-            (d.config[pos + 2] << 16) | (d.config[pos + 3] << 24);
-}
-
 static u_int16_t get_conf_word(struct pci_dev d,
         unsigned int pos)
 {
@@ -596,60 +585,6 @@ static string pci_handle(u_int16_t bus,
         snprintf(buffer, sizeof(buffer), "PCI:%04x:%02x:%02x.%x", domain, bus, dev, fct);
 
     return string(buffer);
-}
-
-static bool scan_resources(hwNode & n,
-        struct pci_dev &d)
-{
-    u_int16_t cmd = get_conf_word(d, PCI_COMMAND);
-
-    n.setWidth(32);
-
-    for(int i = 0; i < 6; i++)
-    {
-        u_int32_t flg = get_conf_long(d, PCI_BASE_ADDRESS_0 + 4 * i);
-        u_int32_t pos = d.base_addr[i];
-        u_int32_t len = d.size[i];
-
-        if(flg == 0xffffffff)
-            flg = 0;
-
-        if(!pos && !flg && !len)
-            continue;
-
-        if(pos && !flg) /* Reported by the OS, but not by the device */
-        {
-            //printf("[virtual] ");
-            flg = pos;
-        }
-        if(flg & PCI_BASE_ADDRESS_SPACE_IO)
-        {
-            u_int32_t a = pos & PCI_BASE_ADDRESS_IO_MASK;
-            if((a != 0) && (cmd & PCI_COMMAND_IO) != 0)
-                n.addResource(hw::resource::ioport(a, a + len - 1));
-        }
-        else // resource is memory
-        {
-            int t = flg & PCI_BASE_ADDRESS_MEM_TYPE_MASK;
-            u_int64_t a = pos & PCI_ADDR_MEM_MASK;
-            u_int64_t z = 0;
-
-            if(t == PCI_BASE_ADDRESS_MEM_TYPE_64)
-            {
-                n.setWidth(64);
-                if(i < 5)
-                {
-                    i++;
-                    z = get_conf_long(d, PCI_BASE_ADDRESS_0 + 4 * i);
-                    a += z << 4;
-                }
-            }
-            if(a)
-                n.addResource(hw::resource::iomem(a, a + len - 1));
-        }
-    }
-
-    return true;
 }
 
 static bool scan_capabilities(hwNode & n, struct pci_dev &d)
@@ -813,8 +748,6 @@ static hwNode *scan_pci_dev(struct pci_dev &d, hwNode & n)
         else
             host.setClock(33000000UL); // 33MHz
 
-        scan_resources(host, d);
-
         if(core)
             result = core->addChild(host);
         else
@@ -899,7 +832,6 @@ static hwNode *scan_pci_dev(struct pci_dev &d, hwNode & n)
                     device->isCapable("agp"))
                 device->claim();
 
-            scan_resources(*device, d);
             scan_capabilities(*device, d);
 
             if(deviceclass == hw::display)
@@ -924,11 +856,6 @@ static hwNode *scan_pci_dev(struct pci_dev &d, hwNode & n)
                     device->setConfig("maxlatency", max_lat);
                 if(min_gnt)
                     device->setConfig("mingnt", min_gnt);
-                if(d.irq != 0)
-                {
-                    //device->setConfig("irq", irq);
-                    device->addResource(hw::resource::irq(d.irq));
-                }
             }
             device->setDescription(get_class_description(dclass));
 
@@ -1120,13 +1047,6 @@ bool scan_pci(hwNode & n)
                         if(exists(string(devices[i]->d_name) + "/rom"))
                         {
                             device->addCapability("rom", "extension ROM");
-                        }
-
-                        if(exists(string(devices[i]->d_name) + "/irq"))
-                        {
-                            long irq = get_number(string(devices[i]->d_name) + "/irq", -1);
-                            if(irq >= 0)
-                                device->addResource(hw::resource::irq(irq));
                         }
                         device->claim();
                     }

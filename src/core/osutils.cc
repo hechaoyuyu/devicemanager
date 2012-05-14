@@ -126,38 +126,6 @@ bool loadfile(const string & file,
     return true;
 }
 
-string get_string(const string & path,
-        const string & def)
-{
-    int fd = open(path.c_str(), O_RDONLY);
-    string result = def;
-
-    if(fd >= 0)
-    {
-        char buffer[1024];
-        size_t count = 0;
-
-        memset(buffer, 0, sizeof(buffer));
-        result = "";
-
-        while((count = read(fd, buffer, sizeof(buffer))) > 0)
-            result += string(buffer, count);
-
-        close(fd);
-    }
-
-    return result;
-}
-
-long get_number(const string & path, long def)
-{
-    string s = get_string(path, "");
-
-    if(s == "") return def;
-
-    return strtol(s.c_str(), NULL, 10);
-}
-
 int selectdir(const struct dirent *d)
 {
     struct stat buf;
@@ -195,89 +163,6 @@ int selectfile(const struct dirent *d)
         return 0;
 
     return S_ISREG(buf.st_mode);
-}
-
-static int selectdevice(const struct dirent *d)
-{
-    struct stat buf;
-
-    if(d->d_name[0] == '.')
-        return 0;
-
-    if(lstat(d->d_name, &buf) != 0)
-        return 0;
-
-    return S_ISCHR(buf.st_mode) || S_ISBLK(buf.st_mode);
-}
-
-static bool matches(string name,
-        mode_t mode,
-        dev_t device)
-{
-    struct stat buf;
-
-    if(lstat(name.c_str(), &buf) != 0)
-        return false;
-
-    return((S_ISCHR(buf.st_mode) && S_ISCHR(mode)) ||
-            (S_ISBLK(buf.st_mode) && S_ISBLK(mode))) && (buf.st_dev == device);
-}
-
-static string find_deventry(string basepath,
-        mode_t mode,
-        dev_t device)
-{
-    struct dirent **namelist;
-    int n, i;
-    string result = "";
-
-    pushd(basepath);
-
-    n = scandir(".", &namelist, selectdevice, alphasort);
-
-    if(n < 0)
-    {
-        popd();
-        return "";
-    }
-
-    for(i = 0; i < n; i++)
-    {
-        if(result == "" && matches(namelist[i]->d_name, mode, device))
-            result = string(namelist[i]->d_name);
-        free(namelist[i]);
-    }
-    free(namelist);
-
-    popd();
-
-    if(result != "")
-        return basepath + "/" + result;
-
-    pushd(basepath);
-    n = scandir(".", &namelist, selectdir, alphasort);
-    popd();
-
-    if(n < 0)
-        return "";
-
-    for(i = 0; i < n; i++)
-    {
-        if(result == "")
-            result =
-                find_deventry(basepath + "/" + string(namelist[i]->d_name), mode,
-                device);
-        free(namelist[i]);
-    }
-    free(namelist);
-
-    return result;
-}
-
-string find_deventry(mode_t mode,
-        dev_t device)
-{
-    return find_deventry("/dev", mode, device);
 }
 
 string get_devid(const string & name)
@@ -344,14 +229,6 @@ string tohex(unsigned long long n)
     snprintf(buffer, sizeof(buffer), "%.4llX", n);
 
     return string(buffer);
-}
-
-string join(const string & j, const string & s1, const string & s2)
-{
-    if(s1 == "") return s2;
-    if(s2 == "") return s1;
-
-    return s1 + j + s2;
 }
 
 bool matches(const string & s, const string & pattern, int cflags)
@@ -431,32 +308,6 @@ string escape(const string & s)
     return result;
 }
 
-string escapeJSON(const string & s)
-{
-    string result = "";
-
-    for(unsigned int i = 0; i < s.length(); i++)
-        switch(s[i])
-        {
-            case '\r':
-                result += "\\r";
-                break;
-            case '\n':
-                result += "\\n";
-                break;
-            case '\t':
-                result += "\\t";
-                break;
-            case '"':
-                result += "\\\"";
-                break;
-            default:
-                result += s[i];
-        }
-
-    return result;
-}
-
 string escapecomment(const string & s)
 {
     string result = "";
@@ -470,71 +321,6 @@ string escapecomment(const string & s)
         }
 
     return result;
-}
-
-unsigned short be_short(const void * from)
-{
-    __uint8_t *p = (__uint8_t*) from;
-
-    return((__uint16_t) (p[0]) << 8) +
-            (__uint16_t) p[1];
-}
-
-unsigned short le_short(const void * from)
-{
-    __uint8_t *p = (__uint8_t*) from;
-
-    return((__uint16_t) (p[1]) << 8) +
-            (__uint16_t) p[0];
-}
-
-unsigned long be_long(const void * from)
-{
-    __uint8_t *p = (__uint8_t*) from;
-
-    return((__uint32_t) (p[0]) << 24) +
-            ((__uint32_t) (p[1]) << 16) +
-            ((__uint32_t) (p[2]) << 8) +
-            (__uint32_t) p[3];
-}
-
-unsigned long le_long(const void * from)
-{
-    __uint8_t *p = (__uint8_t*) from;
-
-    return((__uint32_t) (p[3]) << 24) +
-            ((__uint32_t) (p[2]) << 16) +
-            ((__uint32_t) (p[1]) << 8) +
-            (__uint32_t) p[0];
-
-}
-
-unsigned long long be_longlong(const void * from)
-{
-    __uint8_t *p = (__uint8_t*) from;
-
-    return((unsigned long long) (p[0]) << 56) +
-            ((unsigned long long) (p[1]) << 48) +
-            ((unsigned long long) (p[2]) << 40) +
-            ((unsigned long long) (p[3]) << 32) +
-            ((unsigned long long) (p[4]) << 24) +
-            ((unsigned long long) (p[5]) << 16) +
-            ((unsigned long long) (p[6]) << 8) +
-            (unsigned long long) p[7];
-}
-
-unsigned long long le_longlong(const void * from)
-{
-    __uint8_t *p = (__uint8_t*) from;
-
-    return((unsigned long long) (p[7]) << 56) +
-            ((unsigned long long) (p[6]) << 48) +
-            ((unsigned long long) (p[5]) << 40) +
-            ((unsigned long long) (p[4]) << 32) +
-            ((unsigned long long) (p[3]) << 24) +
-            ((unsigned long long) (p[2]) << 16) +
-            ((unsigned long long) (p[1]) << 8) +
-            (unsigned long long) p[0];
 }
 
 int open_dev(dev_t dev, const string & name)
@@ -561,52 +347,6 @@ int open_dev(dev_t dev, const string & name)
         }
     }
     return -1;
-} /* open_dev */
-
-#define putchar(c) ((char)((c) & 0xff))
-
-string utf8(wchar_t c)
-{
-    string result = "";
-
-    if(c < 0x80)
-    {
-        result += putchar(c);
-    }
-    else if(c < 0x800)
-    {
-        result += putchar(0xC0 | c >> 6);
-        result += putchar(0x80 | (c & 0x3F));
-    }
-    else if(c < 0x10000)
-    {
-        result += putchar(0xE0 | c >> 12);
-        result += putchar(0x80 | (c >> 6 & 0x3F));
-        result += putchar(0x80 | (c & 0x3F));
-    }
-    else if(c < 0x200000)
-    {
-        result += putchar(0xF0 | c >> 18);
-        result += putchar(0x80 | (c >> 12 & 0x3F));
-        result += putchar(0x80 | (c >> 6 & 0x3F));
-        result += putchar(0x80 | (c & 0x3F));
-    }
-
-    return result;
-}
-
-string utf8(uint16_t * s, ssize_t length, bool forcelittleendian)
-{
-    string result = "";
-    ssize_t i;
-
-    for(i = 0; (length < 0) || (i < length); i++)
-        if(s[i])
-            result += utf8(forcelittleendian ? le_short(s + i) : s[i]);
-        else
-            break; // NUL found
-
-    return result;
 }
 
 // U+FFFD replacement character
@@ -678,108 +418,6 @@ string utf8_sanitize(const string & s)
         result += emit;
 
     return result;
-}
-
-string decimalkilos(unsigned long long value)
-{
-    const char *prefixes = "KMGTPEZY";
-    unsigned int i = 0;
-    ostringstream out;
-
-    while((i <= strlen(prefixes)) && ((value > 10000) || (value % 1000 == 0)))
-    {
-        value = value / 1000;
-        i++;
-    }
-
-    out << value;
-    if((i > 0) && (i <= strlen(prefixes)))
-        out << prefixes[i - 1];
-
-    return out.str();
-}
-
-string kilobytes(unsigned long long value)
-{
-    const char *prefixes = "KMGTPEZY";
-    unsigned int i = 0;
-    ostringstream out;
-
-    while((i <= strlen(prefixes)) && ((value > 10240) || (value % 1024 == 0)))
-    {
-        value = value >> 10;
-        i++;
-    }
-
-    out << value;
-    if((i > 0) && (i <= strlen(prefixes)))
-        out << prefixes[i - 1];
-    out << "iB";
-
-    return out.str();
-}
-
-string operating_system()
-{
-    vector<string> osinfo;
-    struct utsname u;
-    string os = "";
-
-    if(loadfile("/etc/lsb-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/lsb_release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/system-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/arch-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/arklinux-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/aurox-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/conectiva-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/debian_version", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/fedora-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/gentoo-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/linuxppc-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/mandrake-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/mandriva-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/novell-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/pld-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/redhat-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/slackware-version", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/sun-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/SuSE-release", osinfo))
-        os = osinfo[0];
-    else if(loadfile("/etc/yellowdog-release", osinfo))
-        os = osinfo[0];
-
-    if(uname(&u) != 0) return "";
-
-    os += (os == "" ? "" : " ; ") + string(u.sysname) + " " + string(u.release);
-
-#if defined(__GLIBC__) && defined(_CS_GNU_LIBC_VERSION)
-    char version[PATH_MAX];
-
-    if(confstr(_CS_GNU_LIBC_VERSION, version, sizeof(version)) > 0)
-        os += " ; " + string(version);
-#endif
-
-    return os;
 }
 
 string platform()

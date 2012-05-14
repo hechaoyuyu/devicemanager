@@ -41,30 +41,6 @@ namespace hw
 
   string reportSize(unsigned long long);
 
-  class resource
-  {
-    public:
-
-      resource();
-      ~resource();
-      resource(const resource &);
-      resource & operator =(const resource &);
-
-      static resource iomem(unsigned long long, unsigned long long);
-      static resource ioport(unsigned long, unsigned long);
-      static resource mem(unsigned long long, unsigned long long, bool prefetchable = false);
-      static resource irq(unsigned int);
-      static resource dma(unsigned int);
-
-      bool operator ==(const resource &) const;
-
-      string asString(const string & separator = ":") const;
-
-    private:
-      struct resource_i * This;
-
-  };
-
   class value
   {
     public:
@@ -162,7 +138,6 @@ class hwNode
     hwNode * findChildByHandle(const string & handle);
     hwNode * findChildByLogicalName(const string & handle);
     hwNode * findChildByBusInfo(const string & businfo);
-    hwNode * findChildByResource(const hw::resource &);
     hwNode * findChild(bool(*matchfunction)(const hwNode &));
     hwNode * addChild(const hwNode & node);
     bool isBus() const
@@ -202,10 +177,6 @@ class hwNode
     void setPhysId(const string &);
     void assignPhysIds();
 
-    void addResource(const hw::resource &);
-    bool usesResource(const hw::resource &) const;
-    vector<string> getResources(const string & separator = "") const;
-
     void addHint(const string &, const hw::value &);
     hw::value getHint(const string &) const;
     vector<string> getHints() const;
@@ -215,7 +186,6 @@ class hwNode
     void fixInconsistencies();
 
     string asXML(unsigned level = 0);
-    string asString();
 
   private:
     void setId(const string & id);
