@@ -4,8 +4,16 @@
  * 
  * Created on 2011年10月13日, 下午1:25
  */
-
+#include <boost/python.hpp>
+#include "main.h"
+#include "options.h"
+#include "super.h"
+#include "stream.h"
+#include "gears.h"
+#include "sensors.h"
 #include "lshw.h"
+
+using namespace boost::python;
 
 lshw::lshw()
 {
@@ -38,7 +46,9 @@ BOOST_PYTHON_MODULE(lshw)
             .def("get_xml", &lshw::get_xml)
             ;
     def("sensors", &sensors);
+    def("gear_fps", &gear_fps);
+    def("super_pi", &super_pi);
     def("record_sign", &record_sign);
     def("stream_triad", &stream_triad);
-    def("super_pi", &super_pi);
+    
 }

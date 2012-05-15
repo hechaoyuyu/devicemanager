@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <sys/time.h>
 #include "super.h"
 
 double super_pi()

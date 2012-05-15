@@ -380,5 +380,12 @@ def test_mem():
     except:
         return ''
 
-#print test_disk()
+def test_fps():
+    try:
+        import lshw
+        return lshw.gear_fps()
+    except:
+        return ''
+
+#print test_cpu(), test_disk(), test_mem(), test_fps()
 

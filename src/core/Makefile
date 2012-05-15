@@ -7,8 +7,8 @@ CXXFLAGS ?= -O3 -Wall
 ##python2.6 or lower version##
 #PYTHON_INC = $(shell python -c 'from distutils.sysconfig import get_python_inc;print get_python_inc()')
 #INCLUDES=-I$(PYTHON_INC) `pkg-config --cflags dbus-1`
-INCLUDES = `pkg-config --cflags python dbus-1`
-LIBS = -lboost_python -lsensors -ldbus-1 -fopenmp
+INCLUDES = `pkg-config --cflags python dbus-1 cairo`
+LIBS = -lboost_python -lsensors -ldbus-1 -lcairo -fopenmp
 
 SITE = $(shell python -c 'from distutils.sysconfig import get_python_lib;print get_python_lib()')
 
@@ -22,7 +22,7 @@ all: $(PACKAGENAME).so
 .cc.o:
 	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
 
-$(PACKAGENAME).so: lshw.cc stream.cc status.cc sensors.cc super.cc $(OBJS)
+$(PACKAGENAME).so: lshw.cc stream.cc status.cc sensors.cc super.cc gears.cc $(OBJS)
 	$(CXX) -L. -shared -fPIC $^ -o $@ $(INCLUDES) $(LIBS)
 	$(STRIP) $@
 

@@ -1,12 +1,6 @@
 #ifndef _STREAM_H_
 #define _STREAM_H_
 
-#include <stdio.h>
-#include <math.h>
-#include <float.h>
-#include <limits.h>
-#include <sys/time.h>
-
 #ifndef N
 #define N 2000000
 #endif
@@ -24,10 +18,10 @@
 #define MAX(x,y) ((x)>(y)?(x):(y))
 #endif
 
+#include <float.h>
+
 static double a[N + OFFSET], b[N + OFFSET], c[N + OFFSET];
-
 static double avgtime = 0, mintime = FLT_MAX;
-
 static double bytes = 3 * sizeof (double) * N;
 
 double mysecond();

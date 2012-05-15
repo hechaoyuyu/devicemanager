@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <sys/time.h>
 #include "stream.h"
 
 double stream_triad()
