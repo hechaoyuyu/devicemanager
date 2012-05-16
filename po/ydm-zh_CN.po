@@ -41,6 +41,9 @@ msgstr "您是否要更新或安装此驱动(Y/N)："
 msgid "Has detected that you have <span color='red' font_desc='10'>%s</span> hardware can be upgraded or installed driver!"
 msgstr "<span font_desc='10'>检测到你有</span><span color='red' font_desc='10'>%s</span><span font_desc='10'>款硬件可以升级或安装驱动！</span>"
 
+msgid "You are not on this machine hardware performance test!"
+msgstr "您还没有对本机进行硬件性能测试！"
+
 msgid "install"
 msgstr "安装"
 
@@ -107,6 +110,9 @@ msgstr "初始化 ..."
 msgid "Loading, please wait ..."
 msgstr "加载中，请稍候 ..."
 
+msgid "Testing, please wait ..."
+msgstr "测试中，请稍候 ..."
+
 msgid "Developing, please wait ..."
 msgstr "开发中，敬请期待 ..."
 
@@ -134,11 +140,59 @@ msgstr "保存截图"
 msgid "Save report"
 msgstr "保存报告"
 
-msgid "Re-tested"
+msgid "Re-detect"
 msgstr "重新检测"
 
 msgid "Re-scanned"
 msgstr "重新扫描"
+
+msgid "Re-tested"
+msgstr "重新测试"
+
+msgid "At-tested"
+msgstr "立即测试"
+
+msgid "CPU performance testing is in progress ..."
+msgstr "正在进行CPU性能测试 ..."
+
+msgid "Memory performance testing is in progress ..."
+msgstr "正在进行内存性能测试 ..."
+
+msgid "Disk performance testing is in progress ..."
+msgstr "正在进行硬盘性能测试 ..."
+
+msgid "Card performance testing is in progress ..."
+msgstr "正在进行显卡性能测试 ..."
+
+msgid "CPU performance"
+msgstr "CPU性能"
+
+msgid "Test CPU data operation ability, the smaller the data processing ability of CPU stronger."
+msgstr "测试CPU数据运算能力，结果越小CPU的数据处理能力越强。"
+
+msgid "Memory performance"
+msgstr "内存性能"
+
+msgid "Test memory read and write performance, the results of the greater read and write the faster."
+msgstr "测试内存读写性能，结果越大内存的读写速度越快。"
+
+msgid "Disk read performance"
+msgstr "硬盘读性能"
+
+msgid "Test hard disk read performance, the results of the greater of hard disk read the faster."
+msgstr "测试硬盘读取性能，结果越大硬盘的读取速度越快。"
+
+msgid "Disk write performance"
+msgstr "硬盘写性能"
+
+msgid "Test hard disk write performance, the results of the greater of hard disk write the faster."
+msgstr "测试硬盘写入性能，结果越大硬盘的写入速度越快。"
+
+msgid "Card performance"
+msgstr "显卡性能"
+
+msgid "Test graphics screen refresh rate, the results of the larger the screen the more smooth the better game support."
+msgstr "测试显卡画面刷新率，结果越大画面越流畅，对游戏支持越好。"
 
 msgid "Hardware Brand"
 msgstr "硬件品牌"

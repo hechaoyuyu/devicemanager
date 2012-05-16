@@ -20,7 +20,7 @@ def _(s):
     return gettext.gettext(s)
 
 
-class DriverThread(Thread, gobject.GObject, BaseFucn):
+class DriverThread(Thread, gobject.GObject):
     __gsignals__ = {
         'load-wait': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
     }
@@ -54,7 +54,7 @@ class DriverPage(gtk.VBox):
             drivers.get_drivers()
             dri_list = drivers.dri_list
             
-            #Tip box
+            #Tip bar
             tipbar = DriverBar(dri_list, base)
             self.pack_start(tipbar, False)
 
@@ -137,7 +137,7 @@ class DriverBar(gtk.EventBox, BaseFucn):
         bar_box.pack_start(rescan, False, False, 20)
 
         '''Save screenshot'''
-        screenshot = self.save_scrot(ICON + "scrot.png", _("Save screenshot"), "SCROT")
+        screenshot = self.save_scrot("SCROT")
         bar_box.pack_end(screenshot, False, False)
 
     def re_scanned(self, has_tap):
@@ -151,14 +151,14 @@ class DriverBar(gtk.EventBox, BaseFucn):
         button.add(label)
         return button
 
-    def save_scrot(self, iconpath, txt, has_tap):
+    def save_scrot(self, has_tap):
 
         button = self.ebox_button()
         button.connect('button-release-event', self.on_click, has_tap)
 
-	icon = gtk.image_new_from_file(iconpath)
+	icon = gtk.image_new_from_file(ICON + "scrot.png")
 	label = gtk.Label()
-	label.set_markup("<span font_desc='10'>%s</span>" % txt)
+	label.set_markup("<span font_desc='10'>%s</span>" % _("Save screenshot"))
 
         box = gtk.HBox()
         box.pack_start(icon, False, False)
@@ -177,7 +177,6 @@ class DriverBar(gtk.EventBox, BaseFucn):
             self.base.framebox.foreach(lambda widget: self.base.framebox.remove(widget))
             driver_thread = DriverThread(self.base)
             driver_thread.start()
-
             self.base.has_tap = "RETRY"
             self.base.select_page(DRI_ID)
 

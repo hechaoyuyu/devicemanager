@@ -40,6 +40,7 @@ from widgets import *
 from dbuscall import call_signal
 from libdevice import DeviceThread
 from libdriver import DriverThread
+from libtest import TestThread
 
 gettext.textdomain('ydm')
 def _(s):
@@ -53,6 +54,7 @@ class DeviceManger(BaseFucn):
 
         self.pcid = {}
         self.lock = False
+        self.testing = False
         self.has_tap = None
 
         self.mainbox = gtk.VBox()
@@ -85,12 +87,14 @@ class DeviceManger(BaseFucn):
         self.device_thread = DeviceThread(self)
         self.device_thread.start()
 
-        '''test'''
         self.driver_thread = DriverThread(self)
         self.driver_thread.start()
 
         if os.path.isfile(HW_XML) and os.path.getsize(HW_XML):
             self.device_thread.join()
+
+        self.test_thread = TestThread(self)
+        self.test_thread.start()
 
         gtk.gdk.threads_enter()
         try:
@@ -142,7 +146,7 @@ class DeviceManger(BaseFucn):
             if hasattr(self, 'driver_page'):
                 if self.has_tap == "RETRY":
                     self.framebox.pack_start(self.load_wait(self, "Loading, please wait ..."))
-                    gobject.timeout_add(250, driver_page)
+                    gobject.timeout_add(500, driver_page)
                 else:
                     self.framebox.pack_start(self.driver_page)
             else:
@@ -150,7 +154,11 @@ class DeviceManger(BaseFucn):
                 self.driver_thread.connect('load-wait', self.wait_page, pageid)
 
         elif pageid == TEST_ID:
-            self.framebox.add(self.load_wait(self, "Developing, please wait ..."))
+            if hasattr(self, 'test_page'):
+                self.framebox.pack_start(self.test_page)
+            else:
+                self.framebox.pack_start(self.load_wait(self, _("Testing, please wait ...")))
+                #self.test_thread.connect('load-wait', self.wait_page, pageid)
 
         self.has_tap = None
 

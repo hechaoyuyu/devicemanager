@@ -39,7 +39,7 @@ class DeviceThread(Thread, gobject.GObject, BaseFucn):
         '''Wait'''
         self.base.framebox.add(self.load_wait(self.base, "Loading, please wait ..."))
 
-	if not os.path.isfile(HW_XML) or not os.path.getsize(HW_XML) or self.flag == "TEST":
+	if not os.path.isfile(HW_XML) or not os.path.getsize(HW_XML) or self.flag == "DET":
             '''set timeout is 600s, the default is 25s'''
             iface = init_dbus()
             data = iface.scan_device(timeout=600)
@@ -63,9 +63,9 @@ class DevicePage(gtk.VBox):
 
 	contentbox = gtk.HBox()
 
-        #Prompt box
-	self.tipbar = DeviceBar(base)
-	self.pack_start(self.tipbar, False)
+        #tip bar
+	tipbar = DeviceBar(base)
+	self.pack_start(tipbar, False)
 
         #category box --> content view --> logo view
 	self.categorybox = DeviceCategory(dev_dict, self.select, base)
@@ -94,7 +94,6 @@ class DeviceBar(gtk.EventBox, BaseFucn):
     def __init__(self, base):
 	gtk.EventBox.__init__(self)
 	self.connect("expose_event", self.expose_ebox, ICON + "tip.png")
-
         self.base = base
 
 	bar_box = gtk.HBox()
@@ -109,8 +108,8 @@ class DeviceBar(gtk.EventBox, BaseFucn):
                             "<span color='red' font_desc='10'>%s</span>" % date)
 	bar_box.pack_start(tip_label, False, False)
 
-        '''TEST'''
-        retest = self.re_tested("TEST")
+        '''DET'''
+        retest = self.re_tested("DET")
         bar_box.pack_start(retest, False, False, 20)
 
         '''Save report'''
@@ -127,7 +126,7 @@ class DeviceBar(gtk.EventBox, BaseFucn):
         button.connect('button-release-event', self.on_click, has_tap)
 
         label = gtk.Label()
-        label.set_markup("<span foreground='#0092CE' font_desc='10'>%s</span>" % _("Re-tested"))
+        label.set_markup("<span foreground='#0092CE' font_desc='10'>%s</span>" % _("Re-detect"))
 
         button.add(label)
         return button
@@ -156,7 +155,7 @@ class DeviceBar(gtk.EventBox, BaseFucn):
             self.save_file_as()
         elif has_tap == "SCROT":
             os.system("gnome-screenshot -w")
-        elif has_tap == "TEST":
+        elif has_tap == "DET":
             self.base.framebox.foreach(lambda widget: self.base.framebox.remove(widget))
             device_thread = DeviceThread(self.base, has_tap)
             device_thread.start()

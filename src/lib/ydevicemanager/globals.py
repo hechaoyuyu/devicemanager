@@ -6,7 +6,7 @@
 import os
 
 R = 15
-D = 10
+D = 16
 S = 6
 DEV_ID = 0
 DRI_ID = 1
@@ -17,8 +17,8 @@ LOGO = "/usr/share/ydevicemanager/logo/"
 DEFAULT_FONT = "WenQuanYi Micro Hei"
 DEFAULT_FONT_SIZE = 13
 
-DEFAULT_WIDTH = 800
-DEFAULT_HEIGHT = 570
+DEFAULT_WIDTH = 900
+DEFAULT_HEIGHT = 660
 
 CONFIG = "/etc/yget.conf"
 DBUS_IFACE = 'com.ylmf.ydm'
@@ -32,6 +32,7 @@ if not os.path.isdir(TARGET_DIR):
     os.mkdir(TARGET_DIR)
 HW_XML = TARGET_DIR + "/device.xml"
 TAR_XML = TARGET_DIR + "/device.tar"
+TEST_Z = TARGET_DIR + "/computer"
 RUN_DIR = os.path.abspath(os.path.dirname(__file__))
 
 C_Errno = 1

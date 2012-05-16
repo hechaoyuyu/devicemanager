@@ -651,16 +651,16 @@ class StatusBar(gtk.EventBox, BaseFucn):
         align.set_padding(0, 0, 10, 0)
 
 	if os.path.isfile(HW_XML):
-	    self.label.set_markup("<span foreground='#A2A4A8' font_desc='10'>%s</span>" % _("Loading Finished"))
+	    self.label.set_markup("<span foreground='#FFFFFF' font_desc='10'>%s</span>" % _("Loading Finished"))
 	else:
-	    self.label.set_markup("<span foreground='#A2A4A8' font_desc='10'>%s</span>" % _("Initialization ..."))
+	    self.label.set_markup("<span foreground='#FFFFFF' font_desc='10'>%s</span>" % _("Initialization ..."))
         state_box.pack_start(align, False)
 
 	osname = gtk.Label()
         align = self.define_align(osname, 0.0, 0.5)
         align.set_padding(0, 0, 0, 10)
 
-        osname.set_markup("<span foreground='#A2A4A8' font_desc='10'>Ylmf OS 5.0</span>")
+        osname.set_markup("<span foreground='#FFFFFF' font_desc='10'>Ylmf OS 5.0</span>")
         state_box.pack_end(align, False)
 
 	self.add(state_box)

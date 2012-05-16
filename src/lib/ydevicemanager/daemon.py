@@ -22,6 +22,7 @@ try:
 except: pass
 import lshw
 from globals import *
+from syscall import *
 from dbuscall import check_polkit
 
 

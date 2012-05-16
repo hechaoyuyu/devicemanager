@@ -190,6 +190,21 @@ def get_monitor():
     try:
 	xrandr = get_output('xrandr')
         info = readfile('/var/log/Xorg.0.log')
+
+        tmp = re.findall("Monitor name: \s*(\w*)\s*(\w*)", info)
+        if tmp:
+            if tmp[0][1]:
+                ret["vendor"] = tmp[0][0]
+                ret["product"] = tmp[0][0] + " " + tmp[0][1]
+            else:ret["product"] = tmp[0][0]
+        
+        tmp = re.findall("Manufacturer:\s*(\w*)\s*Model:\s*(\w*)", info)
+        if tmp:
+            if not ret.get("product"):
+                ret["product"] = tmp[0][0] + " " + tmp[0][1]
+            if not ret.get("vendor"):
+                ret["vendor"] = tmp[0][0]
+        '''
         tmp = re.findall("Manufacturer:\s*(\w*)\s*Model:\s*(\w*)", info)
         if tmp:
             ret["product"] = tmp[0][0] + " " + tmp[0][1]
@@ -202,7 +217,7 @@ def get_monitor():
                 ret["product"] = tmp[0][0] + " " + tmp[0][1]
             elif not ret.get("product"):
                 ret["product"] = tmp[0][0]
-
+        '''
 	tmp = re.findall("Year:\s*(\w*)\s*Week:\s*(\w*)", info)
 	if tmp:
 	    ret["year"] = tmp[0][0]
@@ -346,46 +361,50 @@ def xz_file():
         return 0
     except:return 1
 
-def test_cpu():
+def super_pi():
+    ret = ''
     try:
         import lshw
-        return lshw.super_pi()
+        ret = "%.3fs" %lshw.super_pi()
     except:
-        print >> sys.stderr, 'calculating  failed!'
-    return ''
+        print >> sys.stderr, 'super_pi  failed!'
+    return ret
 
-def test_disk():
+def sysbench():
     ret = {}
     try:
         os.chdir(TARGET_DIR)
         '''生成测试样本'''
-        get_output('sysbench --test=fileio --num-threads=16 --file-total-size=3G --file-test-mode=rndrw prepare')
+        get_output('sysbench --test=fileio --num-threads=16 --file-total-size=1G --file-test-mode=rndrw prepare')
         '''开始测试'''
-        info = get_output('sysbench --test=fileio --num-threads=16 --file-total-size=3G --file-test-mode=rndrw run')
+        info = get_output('sysbench --test=fileio --num-threads=16 --file-total-size=1G --file-test-mode=rndrw run')
         tmp = re.findall("Read (\S*)\s*Written (\S*)", info)
         '''清理临时文件'''
-        get_output('sysbench --test=fileio --num-threads=100 --file-total-size=5G --file-test-mode=rndrw cleanup')
+        get_output('sysbench --test=fileio --num-threads=100 --file-total-size=1G --file-test-mode=rndrw cleanup')
         if tmp:
             ret["read"] = tmp[0][0]
             ret["write"] = tmp[0][1]
     except:
         print 'sysbench --test=fileio failed!'
-
     return ret
 
-def test_mem():
+def stream_triad():
+    ret = ''
     try:
         import lshw
-        return lshw.stream_triad()
+        ret = "%.2fMB/s" %lshw.stream_triad()
     except:
-        return ''
+        print >> sys.stderr, 'stream_triad  failed!'
+    return ret
 
-def test_fps():
+def gear_fps():
+    ret = ''
     try:
         import lshw
-        return lshw.gear_fps()
+        ret = "%.2fFPS" %lshw.gear_fps()
     except:
-        return ''
+        print >> sys.stderr, 'gear_fps  failed!'
+    return ret
 
-#print test_cpu(), test_disk(), test_mem(), test_fps()
+#print sysbench()
 
