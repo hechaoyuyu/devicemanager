@@ -666,4 +666,4 @@ class StatusBar(gtk.EventBox, BaseFucn):
 	self.add(state_box)
 
     def set_status(self, status):
-        self.label.set_markup("<span foreground='#A2A4A8' font_desc='10'>%s</span>" % status)
+        self.label.set_markup("<span foreground='#FFFFFF' font_desc='10'>%s</span>" % status)

@@ -112,13 +112,13 @@ class DeviceBar(gtk.EventBox, BaseFucn):
         retest = self.re_tested("DET")
         bar_box.pack_start(retest, False, False, 20)
 
-        '''Save report'''
-        report = self.report_scrot(ICON + "report.png", _("Generate reports"), "REPORT")
-        bar_box.pack_end(report, False, False)
-
         '''Save screenshot'''
         screenshot = self.report_scrot(ICON + "scrot.png", _("Save screenshot"), "SCROT")
-        bar_box.pack_end(screenshot, False, False, 20)
+        bar_box.pack_end(screenshot, False, False)
+
+        '''Save report'''
+        report = self.report_scrot(ICON + "report.png", _("Generate reports"), "REPORT")
+        bar_box.pack_end(report, False, False, 20)
 
     def re_tested(self, has_tap):
 
