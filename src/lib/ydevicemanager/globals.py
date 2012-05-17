@@ -18,7 +18,7 @@ DEFAULT_FONT = "WenQuanYi Micro Hei"
 DEFAULT_FONT_SIZE = 13
 
 DEFAULT_WIDTH = 900
-DEFAULT_HEIGHT = 660
+DEFAULT_HEIGHT = 666
 
 CONFIG = "/etc/yget.conf"
 DBUS_IFACE = 'com.ylmf.ydm'
