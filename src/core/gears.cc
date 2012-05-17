@@ -130,6 +130,7 @@ static struct framebuffer * get_fb(struct device *abstract_device)
 }
 
 Display *dpy;
+
 struct device * xlib_open()
 {
     struct xlib_device *device;
@@ -142,7 +143,7 @@ struct device * xlib_open()
         return NULL;
 
     device = (xlib_device *) malloc(sizeof(struct xlib_device));
-    device->base.name = "xlib";
+    device->base.name = "设备管理器";
     device->base.get_framebuffer = get_fb;
     device->display = dpy;
 
@@ -194,6 +195,27 @@ struct device *device_open()
     return device;
 }
 
+void fps_draw(cairo_t *cr, const char *name, const int frame, const double delta)
+{
+    cairo_text_extents_t extents;
+    char buf[180];
+
+    cairo_select_font_face(cr, DEFAULT_FONT, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    snprintf(buf, sizeof(buf), "%s: %.1f fps, 剩余时间: %.2fs", name, frame/delta, benchmark-delta);
+    cairo_set_font_size(cr, 10);
+    cairo_text_extents(cr, buf, &extents);
+
+    cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+
+    cairo_rectangle(cr, 4 - 1, 4 - 1, extents.width + 2, extents.height + 2);
+    cairo_set_source_rgba(cr, .0, .0, .0, .5);
+    cairo_fill(cr);
+
+    cairo_move_to(cr, 4 - extents.x_bearing, 4 - extents.y_bearing);
+    cairo_set_source_rgb(cr, .95, .95, .95);
+    cairo_show_text(cr, buf);
+}
+
 //int main()
 double gear_fps()
 {
@@ -202,13 +224,12 @@ double gear_fps()
 
     double delta, fps;
     int frame = 0;
-    int benchmark = 20;
 
     device = device_open();
 
     gettimeofday(&start, 0);
     now = last_tty = last_fps = start;
-    
+
     do
     {
         struct framebuffer *fb = device->get_framebuffer(device);
@@ -224,20 +245,21 @@ double gear_fps()
         gears_render(cr, device->width, device->height);
 
         gettimeofday(&now, NULL);
-        last_fps = now;
-
-        cairo_destroy(cr);
-
-        fb->show(fb);
-        fb->destroy(fb);
 
         frame++;
         delta = now.tv_sec - start.tv_sec;
         delta += (now.tv_usec - start.tv_usec)*1e-6;
+
+        fps_draw(cr, device->name, frame, delta);
+
+        cairo_destroy(cr);
+        fb->show(fb);
+        fb->destroy(fb);
+
         if(delta > benchmark)
         {
-            //printf("gears: %.2f fps\n", frame / delta);
             fps = frame / delta;
+            //printf("fps: %.2f \n", fps);
             break;
         }
 

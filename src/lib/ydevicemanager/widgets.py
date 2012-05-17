@@ -658,10 +658,10 @@ class StatusBar(gtk.EventBox, BaseFucn):
 
 	osname = gtk.Label()
         align = self.define_align(osname, 0.0, 0.5)
-        align.set_padding(0, 0, 0, 10)
+        align.set_padding(0, 0, 0, 18)
 
         osname.set_markup("<span foreground='#FFFFFF' font_desc='10'>Ylmf OS 5.0</span>")
-        state_box.pack_end(align, False)
+        state_box.pack_end(align, False, False)
 
 	self.add(state_box)
 

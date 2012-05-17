@@ -4,6 +4,10 @@
 #include <cairo.h>
 #include <X11/Xutil.h>
 
+#define N_FILTER 25
+#define DEFAULT_FONT "WenQuanYi Micro Hei"
+#define benchmark  20
+
 struct device;
 struct framebuffer;
 struct slide;

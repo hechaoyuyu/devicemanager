@@ -59,6 +59,17 @@ class DeviceManger(BaseFucn):
 
         self.mainbox = gtk.VBox()
         self.framebox = gtk.VBox()
+
+        '''test'''
+        hbox = gtk.HBox()
+        l_line = self.draw_line()
+        hbox.pack_start(l_line, False)
+
+        hbox.pack_start(self.framebox)
+
+        r_line = self.draw_line()
+        hbox.pack_start(r_line, False)
+        '''test'''
         
         # Init gtk window
         self.window = InitWindow()
@@ -68,7 +79,8 @@ class DeviceManger(BaseFucn):
         self.mainbox.pack_start(self.toolbar, False)
 
         # content box
-        self.mainbox.pack_start(self.framebox)
+        #self.mainbox.pack_start(self.framebox)
+        self.mainbox.pack_start(hbox)
 
         # statusbar
         self.status_bar = StatusBar()
@@ -79,6 +91,7 @@ class DeviceManger(BaseFucn):
             self.device_changed()
 
         self.align = self.define_align(self.mainbox, xc=1.0, yc=1.0)
+        #self.align = self.define_align(hbox, xc=1.0, yc=1.0)
         self.align.set_padding(2*S, 2*S, 2*S, 2*S)
 
         self.window.add(self.align)
