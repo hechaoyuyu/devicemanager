@@ -6,7 +6,7 @@
 import os
 
 R = 15
-D = 16
+D = 20
 S = 6
 DEV_ID = 0
 DRI_ID = 1

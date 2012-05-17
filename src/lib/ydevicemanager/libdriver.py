@@ -309,8 +309,9 @@ class ActionButton(gtk.Button, BaseFucn):
         '''judge the installation state'''
         self.judge_install(pkgname)
 
-        self.set_size_request(self.n_pixbuf.get_width(), self.n_pixbuf.get_height())
+        self.set_size_request(self.n_pixbuf.get_width(), self.n_pixbuf.get_height() + 4)
         self.add(self.label)
+        self.set_alignment(0.5, 1)
 
         self.connect("expose_event", self.expose_button, self.n_pixbuf, self.h_pixbuf, self.p_pixbuf)
         self.connect("clicked", self.on_click, pkgname, pkgmod)
