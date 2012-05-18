@@ -392,7 +392,7 @@ def stream_triad():
     ret = ''
     try:
         import lshw
-        ret = "%.2fMB/s" %lshw.stream_triad()
+        ret = "%.3fGB/s" %(lshw.stream_triad()/1024)
     except:
         print >> sys.stderr, 'stream_triad  failed!'
     return ret
