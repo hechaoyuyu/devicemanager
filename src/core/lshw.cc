@@ -22,7 +22,7 @@ lshw::lshw()
 
 lshw::~lshw()
 {
-    if (computer)
+    if(computer)
         delete computer;
 }
 
@@ -38,7 +38,6 @@ string lshw::get_xml()
     return computer->asXML();
 }
 
-
 BOOST_PYTHON_MODULE(lshw)
 {
     class_<lshw, boost::noncopyable > ("lshw", "This is a lshw project python extend", init<>())
@@ -50,5 +49,4 @@ BOOST_PYTHON_MODULE(lshw)
     def("super_pi", &super_pi);
     def("record_sign", &record_sign);
     def("stream_triad", &stream_triad);
-    
 }

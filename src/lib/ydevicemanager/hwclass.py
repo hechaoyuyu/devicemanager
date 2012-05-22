@@ -68,10 +68,14 @@ class Computer(gtk.VBox, BaseFucn):
 
     def updates(self, record):
         '''refresh temperature'''
+        val = ""
         if record == "cpu":
             val = cpu_sensor()
         else:
             val = disk_sensor(record)
+        if not val:
+            return False
+
         r = re.match("\d+",val)
         if r:
             if int(r.group()) >= 60:
@@ -471,10 +475,15 @@ class Monitor(Computer):
 
         del bodys[:]
 	bodys.append((_("Apparent Area"), dict.get("size")))
+
         inch = dict.get("in")
         if inch:
             bodys.append((_("Dimension"), inch + _("inches")))
-	bodys.append((_("Current resolution"), dict.get("mode")))
+
+        ratio = get_ratio()
+        if ratio:
+            bodys.append((_("Current resolution"), ratio))
+
 	bodys.append((_("Max resolution"), dict.get("maxmode")))
 	bodys.append((_("Gamma"), dict.get("gamma")))
 	bodys.append((_("Current output"), dict.get("output")))
@@ -496,7 +505,10 @@ class Modem(Computer):
     def __init__(self, description, product, vendor, version, businfo, serial, config, capability):
         Computer.__init__(self, product)
 
-	self.title_box(_(self.category))
+	if description:
+            self.title_box(_(description))
+        else:
+            self.title_box(_(self.category))
         self.tag_box(_("Basic Info"))
 
         bodys = []

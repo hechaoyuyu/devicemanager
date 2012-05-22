@@ -168,31 +168,31 @@ msgid "CPU performance"
 msgstr "CPU性能"
 
 msgid "Test CPU data operation ability, the smaller the data processing ability of CPU stronger."
-msgstr "测试CPU数据运算能力，结果数值越小，CPU的数据处理能力越强。"
+msgstr "测试CPU数据运算能力，结果越小CPU的数据处理能力越强。"
 
 msgid "Memory performance"
 msgstr "内存性能"
 
 msgid "Test memory read and write performance, the results of the greater read and write the faster."
-msgstr "测试内存读写性能，结果数值越大，内存的读写速度越快。"
+msgstr "测试内存读写性能，结果越大内存的读写速度越快。"
 
 msgid "Disk read performance"
 msgstr "硬盘读性能"
 
 msgid "Test hard disk read performance, the results of the greater of hard disk read the faster."
-msgstr "测试硬盘读取性能，结果数值越大，硬盘的读取速度越快。"
+msgstr "测试硬盘读取性能，结果越大硬盘的读取速度越快。"
 
 msgid "Disk write performance"
 msgstr "硬盘写性能"
 
 msgid "Test hard disk write performance, the results of the greater of hard disk write the faster."
-msgstr "测试硬盘写入性能，结果数值越大，硬盘的写入速度越快。"
+msgstr "测试硬盘写入性能，结果越大硬盘的写入速度越快。"
 
 msgid "Card performance"
 msgstr "显卡性能"
 
 msgid "Test graphics screen refresh rate, the results of the larger the screen the more smooth the better game support."
-msgstr "测试显卡画面刷新率，结果数值越大，画面越流畅，对游戏支持越好。"
+msgstr "测试显卡画面刷新率，结果越大画面越流畅，对游戏支持越好。"
 
 msgid "Hardware Brand"
 msgstr "硬件品牌"
@@ -808,6 +808,9 @@ msgstr "人机接口设备"
 
 msgid "Bluetooth wireless interface"
 msgstr "蓝牙无线接口"
+
+msgid "Generic USB device"
+msgstr "通用USB设备"
 
 msgid "Keyboard"
 msgstr "键盘"

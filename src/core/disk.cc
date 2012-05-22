@@ -41,7 +41,7 @@ bool scan_disk(hwNode & n)
     if(fd < 0)
         return false;
 
-    if (ioctl(fd, BLKPBSZGET, &physsectsize) != 0)
+    if(ioctl(fd, BLKPBSZGET, &physsectsize) != 0)
         physsectsize = 0;
     if(physsectsize)
         n.setConfig("sectorsize", physsectsize);

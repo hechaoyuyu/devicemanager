@@ -85,7 +85,7 @@ hwNode * guessParent(const hwNode & child, hwNode & base)
     return base.findChildByBusInfo(guessParentBusInfo(child));
 }
 
-static const char *disk_manufacturers[] ={
+static const char *disk_manufacturers[] = {
     "^ST.+", "Seagate",
     "^D...-.+", "IBM",
     "^IBM.+", "IBM",

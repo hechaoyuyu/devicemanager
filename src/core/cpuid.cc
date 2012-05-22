@@ -77,7 +77,6 @@ static hwNode *getcpu(hwNode & node,
 #define cpuid_up(in,a,b,c,d) asm("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (in));
 #endif
 
-
 static void cpuid(int cpunumber,
         unsigned long idx,
         unsigned long &eax,

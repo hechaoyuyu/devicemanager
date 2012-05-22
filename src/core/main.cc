@@ -13,7 +13,6 @@
 #include "network.h"
 #include "usb.h"
 #include "sysfs.h"
-#include "display.h"
 #include "cpufreq.h"
 #include "smp.h"
 #include "abi.h"
@@ -75,9 +74,6 @@ bool scan_system(hwNode & system)
         status("Network interfaces");
         if(enabled("network"))
             scan_network(computer);
-        status("Display");
-        if(enabled("display"))
-            scan_display(computer);
         status("CPUFreq");
         if(enabled("cpufreq"))
             scan_cpufreq(computer);

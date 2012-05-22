@@ -201,7 +201,7 @@ void fps_draw(cairo_t *cr, const char *name, const int frame, const double delta
     char buf[180];
 
     cairo_select_font_face(cr, DEFAULT_FONT, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    snprintf(buf, sizeof(buf), "%s: %.1f fps, 剩余时间: %.2fs", name, frame/delta, benchmark-delta);
+    snprintf(buf, sizeof(buf), "%s: %.1f fps, 剩余时间: %.2fs", name, frame / delta, benchmark - delta);
     cairo_set_font_size(cr, 10);
     cairo_text_extents(cr, buf, &extents);
 
@@ -217,6 +217,7 @@ void fps_draw(cairo_t *cr, const char *name, const int frame, const double delta
 }
 
 //int main()
+
 double gear_fps()
 {
     struct device *device;

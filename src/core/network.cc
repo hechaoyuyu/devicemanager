@@ -52,18 +52,18 @@ typedef __uint8_t u8;
 
 struct ethtool_cmd
 {
-  u32 cmd;
-  u32 supported;                                  /* Features this interface supports */
-  u32 advertising;                                /* Features this interface advertises */
-  u16 speed;                                      /* The forced speed, 10Mb, 100Mb, gigabit */
-  u8 duplex;                                      /* Duplex, half or full */
-  u8 port;                                        /* Which connector port */
-  u8 phy_address;
-  u8 transceiver;                                 /* Which tranceiver to use */
-  u8 autoneg;                                     /* Enable or disable autonegotiation */
-  u32 maxtxpkt;                                   /* Tx pkts before generating tx int */
-  u32 maxrxpkt;                                   /* Rx pkts before generating rx int */
-  u32 reserved[4];
+    u32 cmd;
+    u32 supported; /* Features this interface supports */
+    u32 advertising; /* Features this interface advertises */
+    u16 speed; /* The forced speed, 10Mb, 100Mb, gigabit */
+    u8 duplex; /* Duplex, half or full */
+    u8 port; /* Which connector port */
+    u8 phy_address;
+    u8 transceiver; /* Which tranceiver to use */
+    u8 autoneg; /* Enable or disable autonegotiation */
+    u32 maxtxpkt; /* Tx pkts before generating tx int */
+    u32 maxrxpkt; /* Rx pkts before generating rx int */
+    u32 reserved[4];
 };
 
 #ifndef IFNAMSIZ
@@ -74,30 +74,31 @@ struct ethtool_cmd
  * Common values : "IEEE 802.11-DS", "IEEE 802.11-FH", "IEEE 802.11b"... */
 
 #define ETHTOOL_BUSINFO_LEN     32
+
 /* these strings are set to whatever the driver author decides... */
 struct ethtool_drvinfo
 {
-  u32 cmd;
-  char driver[32];                                /* driver short name, "tulip", "eepro100" */
-  char version[32];                               /* driver version string */
-  char fw_version[32];                            /* firmware version string, if applicable */
-  char bus_info[ETHTOOL_BUSINFO_LEN];             /* Bus info for this IF. */
-/*
- * For PCI devices, use pci_dev->slot_name.
- */
-  char reserved1[32];
-  char reserved2[16];
-  u32 n_stats;                                    /* number of u64's from ETHTOOL_GSTATS */
-  u32 testinfo_len;
-  u32 eedump_len;                                 /* Size of data from ETHTOOL_GEEPROM (bytes) */
-  u32 regdump_len;                                /* Size of data from ETHTOOL_GREGS (bytes) */
+    u32 cmd;
+    char driver[32]; /* driver short name, "tulip", "eepro100" */
+    char version[32]; /* driver version string */
+    char fw_version[32]; /* firmware version string, if applicable */
+    char bus_info[ETHTOOL_BUSINFO_LEN]; /* Bus info for this IF. */
+    /*
+     * For PCI devices, use pci_dev->slot_name.
+     */
+    char reserved1[32];
+    char reserved2[16];
+    u32 n_stats; /* number of u64's from ETHTOOL_GSTATS */
+    u32 testinfo_len;
+    u32 eedump_len; /* Size of data from ETHTOOL_GEEPROM (bytes) */
+    u32 regdump_len; /* Size of data from ETHTOOL_GREGS (bytes) */
 };
 
 /* for passing single values */
 struct ethtool_value
 {
-  u32 cmd;
-  u32 data;
+    u32 cmd;
+    u32 data;
 };
 
 /* CMDs currently supported */
@@ -149,391 +150,385 @@ struct ethtool_value
 
 bool load_interfaces(vector < string > &interfaces)
 {
-  vector < string > procnetdev;
+    vector < string > procnetdev;
 
-  interfaces.clear();
-  if (!loadfile("/proc/net/dev", procnetdev))
-    return false;
+    interfaces.clear();
+    if(!loadfile("/proc/net/dev", procnetdev))
+        return false;
 
-  if (procnetdev.size() <= 2)
-    return false;
+    if(procnetdev.size() <= 2)
+        return false;
 
-// get rid of header (2 lines)
-  procnetdev.erase(procnetdev.begin());
-  procnetdev.erase(procnetdev.begin());
+    // get rid of header (2 lines)
+    procnetdev.erase(procnetdev.begin());
+    procnetdev.erase(procnetdev.begin());
 
-  for (unsigned int i = 0; i < procnetdev.size(); i++)
-  {
-// extract interfaces names
-    size_t pos = procnetdev[i].find(':');
+    for(unsigned int i = 0; i < procnetdev.size(); i++)
+    {
+        // extract interfaces names
+        size_t pos = procnetdev[i].find(':');
 
-    if (pos != string::npos)
-      interfaces.push_back(hw::strip(procnetdev[i].substr(0, pos)));
-  }
+        if(pos != string::npos)
+            interfaces.push_back(hw::strip(procnetdev[i].substr(0, pos)));
+    }
 
-  return true;
+    return true;
 }
-
 
 static string getmac(const unsigned char *mac)
 {
-  char buff[5];
-  string result = "";
-  bool valid = false;
+    char buff[5];
+    string result = "";
+    bool valid = false;
 
-  for (int i = 0; i < 6; i++)
-  {
-    snprintf(buff, sizeof(buff), "%02x", mac[i]);
+    for(int i = 0; i < 6; i++)
+    {
+        snprintf(buff, sizeof(buff), "%02x", mac[i]);
 
-    valid |= (mac[i] != 0);
+        valid |= (mac[i] != 0);
 
-    if (i == 0)
-      result = string(buff);
+        if(i == 0)
+            result = string(buff);
+        else
+            result += ":" + string(buff);
+    }
+
+    if(valid)
+        return result;
     else
-      result += ":" + string(buff);
-  }
-
-  if (valid)
-    return result;
-  else
-    return "";
+        return "";
 }
-
 
 static const char *hwname(int t)
 {
-  switch (t)
-  {
-    case ARPHRD_ETHER:
-      return "Ethernet";
-    case ARPHRD_SLIP:
-      return "SLIP";
-    case ARPHRD_LOOPBACK:
-      return "loopback";
-    case ARPHRD_FDDI:
-      return "FDDI";
-    case ARPHRD_IEEE1394:
-      return "IEEE1394";
-    case ARPHRD_IRDA:
-      return "IRDA";
-    case ARPHRD_PPP:
-      return "PPP";
-    case ARPHRD_X25:
-      return "X25";
-    case ARPHRD_TUNNEL:
-      return "IPtunnel";
-    case ARPHRD_DLCI:
-      return "Framerelay.DLCI";
-    case ARPHRD_FRAD:
-      return "Framerelay.AD";
-    case ARPHRD_TUNNEL6:
-      return "IP6tunnel";
-    case ARPHRD_SIT:
-      return "IP6inIP4";
-    default:
-      return "";
-  }
+    switch(t)
+    {
+        case ARPHRD_ETHER:
+            return "Ethernet";
+        case ARPHRD_SLIP:
+            return "SLIP";
+        case ARPHRD_LOOPBACK:
+            return "loopback";
+        case ARPHRD_FDDI:
+            return "FDDI";
+        case ARPHRD_IEEE1394:
+            return "IEEE1394";
+        case ARPHRD_IRDA:
+            return "IRDA";
+        case ARPHRD_PPP:
+            return "PPP";
+        case ARPHRD_X25:
+            return "X25";
+        case ARPHRD_TUNNEL:
+            return "IPtunnel";
+        case ARPHRD_DLCI:
+            return "Framerelay.DLCI";
+        case ARPHRD_FRAD:
+            return "Framerelay.AD";
+        case ARPHRD_TUNNEL6:
+            return "IP6tunnel";
+        case ARPHRD_SIT:
+            return "IP6inIP4";
+        default:
+            return "";
+    }
 }
-
 
 static string print_ip(struct sockaddr_in *in)
 {
-  return string(inet_ntoa(in->sin_addr));
+    return string(inet_ntoa(in->sin_addr));
 }
-
 
 static void scan_ip(hwNode & interface)
 {
-  int fd = socket(AF_INET, SOCK_DGRAM, 0);
+    int fd = socket(AF_INET, SOCK_DGRAM, 0);
 
-  if (fd > 0)
-  {
-    struct ifreq ifr;
-
-// get IP address
-    memset(&ifr, 0, sizeof(ifr));
-    strcpy(ifr.ifr_name, interface.getLogicalName().c_str());
-    ifr.ifr_addr.sa_family = AF_INET;
-    if (ioctl(fd, SIOCGIFADDR, &ifr) == 0)
+    if(fd > 0)
     {
-// IP address is in ifr.ifr_addr
-      interface.setConfig("ip", ::enabled("output:sanitize")?REMOVED:print_ip((sockaddr_in *) (&ifr.ifr_addr)));
-      strcpy(ifr.ifr_name, interface.getLogicalName().c_str());
-      if ((interface.getConfig("point-to-point") == "yes")
-        && (ioctl(fd, SIOCGIFDSTADDR, &ifr) == 0))
-      {
-// remote PPP address is in ifr.ifr_dstaddr
-        interface.setConfig("remoteip",
-          print_ip((sockaddr_in *) & ifr.ifr_dstaddr));
-      }
+        struct ifreq ifr;
+
+        // get IP address
+        memset(&ifr, 0, sizeof(ifr));
+        strcpy(ifr.ifr_name, interface.getLogicalName().c_str());
+        ifr.ifr_addr.sa_family = AF_INET;
+        if(ioctl(fd, SIOCGIFADDR, &ifr) == 0)
+        {
+            // IP address is in ifr.ifr_addr
+            interface.setConfig("ip", ::enabled("output:sanitize") ? REMOVED : print_ip((sockaddr_in *) (&ifr.ifr_addr)));
+            strcpy(ifr.ifr_name, interface.getLogicalName().c_str());
+            if((interface.getConfig("point-to-point") == "yes")
+                    && (ioctl(fd, SIOCGIFDSTADDR, &ifr) == 0))
+            {
+                // remote PPP address is in ifr.ifr_dstaddr
+                interface.setConfig("remoteip",
+                        print_ip((sockaddr_in *) & ifr.ifr_dstaddr));
+            }
+        }
+
+        close(fd);
     }
-
-    close(fd);
-  }
 }
-
 
 static bool isVirtual(const string & MAC)
 {
-  if (MAC.length() < 8)
+    if(MAC.length() < 8)
+        return false;
+
+    string manufacturer = uppercase(MAC.substr(0, 8));
+
+    if((manufacturer == "00:05:69") ||
+            (manufacturer == "00:0C:29") || (manufacturer == "00:50:56"))
+        return true; // VMware
+    if(manufacturer == "00:1C:42")
+        return true; // Parallels
+    if(manufacturer == "0A:00:27")
+        return true; // VirtualBox
+
     return false;
-
-  string manufacturer = uppercase(MAC.substr(0, 8));
-
-  if ((manufacturer == "00:05:69") ||
-    (manufacturer == "00:0C:29") || (manufacturer == "00:50:56"))
-    return true;	// VMware
-  if (manufacturer == "00:1C:42")
-    return true;	// Parallels
-  if (manufacturer == "0A:00:27")
-    return true;	// VirtualBox
-
-  return false;
 }
-
 
 bool scan_network(hwNode & n)
 {
-  vector < string > interfaces;
-  char buffer[2 * IFNAMSIZ + 1];
+    vector < string > interfaces;
+    char buffer[2 * IFNAMSIZ + 1];
 
-  if (!load_interfaces(interfaces))
-    return false;
+    if(!load_interfaces(interfaces))
+        return false;
 
-  int fd = socket(PF_INET, SOCK_DGRAM, 0);
+    int fd = socket(PF_INET, SOCK_DGRAM, 0);
 
-  if (fd >= 0)
-  {
-    struct ifreq ifr;
-    struct ethtool_drvinfo drvinfo;
-    struct ethtool_cmd ecmd;
-    struct ethtool_value edata;
-
-    for (unsigned int i = 0; i < interfaces.size(); i++)
+    if(fd >= 0)
     {
-      hwNode interface("network",
-        hw::network);
+        struct ifreq ifr;
+        struct ethtool_drvinfo drvinfo;
+        struct ethtool_cmd ecmd;
+        struct ethtool_value edata;
 
-      interface.setLogicalName(interfaces[i]);
-      interface.claim();
-      interface.addHint("icon", string("network"));
-
-      string businfo = sysfs_getbusinfo(sysfs::entry::byClass("net", interface.getLogicalName()));
-      interface.setBusInfo(businfo);
-
-//scan_mii(fd, interface);
-      scan_ip(interface);
-
-      memset(&ifr, 0, sizeof(ifr));
-      strcpy(ifr.ifr_name, interfaces[i].c_str());
-      if (ioctl(fd, SIOCGIFFLAGS, &ifr) == 0)
-      {
-#ifdef IFF_PORTSEL
-        if (ifr.ifr_flags & IFF_PORTSEL)
+        for(unsigned int i = 0; i < interfaces.size(); i++)
         {
-          if (ifr.ifr_flags & IFF_AUTOMEDIA)
-            interface.setConfig("automedia", "yes");
-        }
+            hwNode interface("network",
+                    hw::network);
+
+            interface.setLogicalName(interfaces[i]);
+            interface.claim();
+            interface.addHint("icon", string("network"));
+
+            string businfo = sysfs_getbusinfo(sysfs::entry::byClass("net", interface.getLogicalName()));
+            interface.setBusInfo(businfo);
+
+            //scan_mii(fd, interface);
+            scan_ip(interface);
+
+            memset(&ifr, 0, sizeof(ifr));
+            strcpy(ifr.ifr_name, interfaces[i].c_str());
+            if(ioctl(fd, SIOCGIFFLAGS, &ifr) == 0)
+            {
+#ifdef IFF_PORTSEL
+                if(ifr.ifr_flags & IFF_PORTSEL)
+                {
+                    if(ifr.ifr_flags & IFF_AUTOMEDIA)
+                        interface.setConfig("automedia", "yes");
+                }
 #endif
 
-        if (ifr.ifr_flags & IFF_UP)
-          interface.enable();
-        else
-          interface.disable();
-        if (ifr.ifr_flags & IFF_BROADCAST)
-          interface.setConfig("broadcast", "yes");
-        if (ifr.ifr_flags & IFF_DEBUG)
-          interface.setConfig("debug", "yes");
-        if (ifr.ifr_flags & IFF_LOOPBACK)
-          interface.setConfig("loopback", "yes");
-        if (ifr.ifr_flags & IFF_POINTOPOINT)
-          interface.setConfig("point-to-point", "yes");
-        if (ifr.ifr_flags & IFF_PROMISC)
-          interface.setConfig("promiscuous", "yes");
-        if (ifr.ifr_flags & IFF_SLAVE)
-          interface.setConfig("slave", "yes");
-        if (ifr.ifr_flags & IFF_MASTER)
-          interface.setConfig("master", "yes");
-        if (ifr.ifr_flags & IFF_MULTICAST)
-          interface.setConfig("multicast", "yes");
-      }
+                if(ifr.ifr_flags & IFF_UP)
+                    interface.enable();
+                else
+                    interface.disable();
+                if(ifr.ifr_flags & IFF_BROADCAST)
+                    interface.setConfig("broadcast", "yes");
+                if(ifr.ifr_flags & IFF_DEBUG)
+                    interface.setConfig("debug", "yes");
+                if(ifr.ifr_flags & IFF_LOOPBACK)
+                    interface.setConfig("loopback", "yes");
+                if(ifr.ifr_flags & IFF_POINTOPOINT)
+                    interface.setConfig("point-to-point", "yes");
+                if(ifr.ifr_flags & IFF_PROMISC)
+                    interface.setConfig("promiscuous", "yes");
+                if(ifr.ifr_flags & IFF_SLAVE)
+                    interface.setConfig("slave", "yes");
+                if(ifr.ifr_flags & IFF_MASTER)
+                    interface.setConfig("master", "yes");
+                if(ifr.ifr_flags & IFF_MULTICAST)
+                    interface.setConfig("multicast", "yes");
+            }
 
-      memset(&ifr, 0, sizeof(ifr));
-      strcpy(ifr.ifr_name, interfaces[i].c_str());
-// get MAC address
-      if (ioctl(fd, SIOCGIFHWADDR, &ifr) == 0)
-      {
-        string hwaddr = getmac((unsigned char *) ifr.ifr_hwaddr.sa_data);
-        interface.addCapability(hwname(ifr.ifr_hwaddr.sa_family));
-        if (ifr.ifr_hwaddr.sa_family >= 256)
-          interface.addCapability("logical", "Logical interface");
-        else
-          interface.addCapability("physical", "Physical interface");
-        interface.setDescription(string(hwname(ifr.ifr_hwaddr.sa_family)) +
-          " interface");
-        interface.setSerial(hwaddr);
+            memset(&ifr, 0, sizeof(ifr));
+            strcpy(ifr.ifr_name, interfaces[i].c_str());
+            // get MAC address
+            if(ioctl(fd, SIOCGIFHWADDR, &ifr) == 0)
+            {
+                string hwaddr = getmac((unsigned char *) ifr.ifr_hwaddr.sa_data);
+                interface.addCapability(hwname(ifr.ifr_hwaddr.sa_family));
+                if(ifr.ifr_hwaddr.sa_family >= 256)
+                    interface.addCapability("logical", "Logical interface");
+                else
+                    interface.addCapability("physical", "Physical interface");
+                interface.setDescription(string(hwname(ifr.ifr_hwaddr.sa_family)) +
+                        " interface");
+                interface.setSerial(hwaddr);
 
-        if (isVirtual(interface.getSerial()))
-          interface.addCapability("logical", "Logical interface");
-      }
+                if(isVirtual(interface.getSerial()))
+                    interface.addCapability("logical", "Logical interface");
+            }
 
-// check for wireless extensions
-      memset(buffer, 0, sizeof(buffer));
-      strncpy(buffer, interfaces[i].c_str(), sizeof(buffer));
-      if (ioctl(fd, SIOCGIWNAME, &buffer) == 0)
-      {
-        interface.addCapability("wireless", "Wireless-LAN");
-        interface.setConfig("wireless", hw::strip(buffer + IFNAMSIZ));
-        interface.setDescription("Wireless interface");
-        interface.addHint("icon", string("wifi"));
-        interface.addHint("bus.icon", string("radio"));
-      }
+            // check for wireless extensions
+            memset(buffer, 0, sizeof(buffer));
+            strncpy(buffer, interfaces[i].c_str(), sizeof(buffer));
+            if(ioctl(fd, SIOCGIWNAME, &buffer) == 0)
+            {
+                interface.addCapability("wireless", "Wireless-LAN");
+                interface.setConfig("wireless", hw::strip(buffer + IFNAMSIZ));
+                interface.setDescription("Wireless interface");
+                interface.addHint("icon", string("wifi"));
+                interface.addHint("bus.icon", string("radio"));
+            }
 
-      edata.cmd = ETHTOOL_GLINK;
-      memset(&ifr, 0, sizeof(ifr));
-      strcpy(ifr.ifr_name, interfaces[i].c_str());
-      ifr.ifr_data = (caddr_t) &edata;
-      if (ioctl(fd, SIOCETHTOOL, &ifr) == 0)
-      {
-        interface.setConfig("link", edata.data ? "yes":"no");
-      }
+            edata.cmd = ETHTOOL_GLINK;
+            memset(&ifr, 0, sizeof(ifr));
+            strcpy(ifr.ifr_name, interfaces[i].c_str());
+            ifr.ifr_data = (caddr_t) & edata;
+            if(ioctl(fd, SIOCETHTOOL, &ifr) == 0)
+            {
+                interface.setConfig("link", edata.data ? "yes" : "no");
+            }
 
-      ecmd.cmd = ETHTOOL_GSET;
-      memset(&ifr, 0, sizeof(ifr));
-      strcpy(ifr.ifr_name, interfaces[i].c_str());
-      ifr.ifr_data = (caddr_t) &ecmd;
-      if (ioctl(fd, SIOCETHTOOL, &ifr) == 0)
-      {
-        if(ecmd.supported & SUPPORTED_TP)
-          interface.addCapability("tp", "twisted pair");
-        if(ecmd.supported & SUPPORTED_AUI)
-          interface.addCapability("aui", "AUI");
-        if(ecmd.supported & SUPPORTED_BNC)
-          interface.addCapability("bnc", "BNC");
-        if(ecmd.supported & SUPPORTED_MII)
-          interface.addCapability("mii", "Media Independant Interface");
-        if(ecmd.supported & SUPPORTED_FIBRE)
-          interface.addCapability("fibre", "optical fibre");
-        if(ecmd.supported & SUPPORTED_10baseT_Half)
-        {
-          interface.addCapability("10bt", "10Mbit/s");
-          interface.setCapacity(10000000L);
-        }
-        if(ecmd.supported & SUPPORTED_10baseT_Full)
-        {
-          interface.addCapability("10bt-fd", "10Mbit/s (full duplex)");
-          interface.setCapacity(10000000L);
-        }
-        if(ecmd.supported & SUPPORTED_100baseT_Half)
-        {
-          interface.addCapability("100bt", "100Mbit/s");
-          interface.setCapacity(100000000L);
-        }
-        if(ecmd.supported & SUPPORTED_100baseT_Full)
-        {
-          interface.addCapability("100bt-fd", "100Mbit/s (full duplex)");
-          interface.setCapacity(100000000L);
-        }
-        if(ecmd.supported & SUPPORTED_1000baseT_Half)
-        {
-          interface.addCapability("1000bt", "1Gbit/s");
-          interface.setCapacity(1000000000L);
-        }
-        if(ecmd.supported & SUPPORTED_1000baseT_Full)
-        {
-          interface.addCapability("1000bt-fd", "1Gbit/s (full duplex)");
-          interface.setCapacity(1000000000L);
-        }
-        if(ecmd.supported & SUPPORTED_Autoneg)
-          interface.addCapability("autonegotiation", "Auto-negotiation");
+            ecmd.cmd = ETHTOOL_GSET;
+            memset(&ifr, 0, sizeof(ifr));
+            strcpy(ifr.ifr_name, interfaces[i].c_str());
+            ifr.ifr_data = (caddr_t) & ecmd;
+            if(ioctl(fd, SIOCETHTOOL, &ifr) == 0)
+            {
+                if(ecmd.supported & SUPPORTED_TP)
+                    interface.addCapability("tp", "twisted pair");
+                if(ecmd.supported & SUPPORTED_AUI)
+                    interface.addCapability("aui", "AUI");
+                if(ecmd.supported & SUPPORTED_BNC)
+                    interface.addCapability("bnc", "BNC");
+                if(ecmd.supported & SUPPORTED_MII)
+                    interface.addCapability("mii", "Media Independant Interface");
+                if(ecmd.supported & SUPPORTED_FIBRE)
+                    interface.addCapability("fibre", "optical fibre");
+                if(ecmd.supported & SUPPORTED_10baseT_Half)
+                {
+                    interface.addCapability("10bt", "10Mbit/s");
+                    interface.setCapacity(10000000L);
+                }
+                if(ecmd.supported & SUPPORTED_10baseT_Full)
+                {
+                    interface.addCapability("10bt-fd", "10Mbit/s (full duplex)");
+                    interface.setCapacity(10000000L);
+                }
+                if(ecmd.supported & SUPPORTED_100baseT_Half)
+                {
+                    interface.addCapability("100bt", "100Mbit/s");
+                    interface.setCapacity(100000000L);
+                }
+                if(ecmd.supported & SUPPORTED_100baseT_Full)
+                {
+                    interface.addCapability("100bt-fd", "100Mbit/s (full duplex)");
+                    interface.setCapacity(100000000L);
+                }
+                if(ecmd.supported & SUPPORTED_1000baseT_Half)
+                {
+                    interface.addCapability("1000bt", "1Gbit/s");
+                    interface.setCapacity(1000000000L);
+                }
+                if(ecmd.supported & SUPPORTED_1000baseT_Full)
+                {
+                    interface.addCapability("1000bt-fd", "1Gbit/s (full duplex)");
+                    interface.setCapacity(1000000000L);
+                }
+                if(ecmd.supported & SUPPORTED_Autoneg)
+                    interface.addCapability("autonegotiation", "Auto-negotiation");
 
-        switch(ecmd.speed)
-        {
-          case SPEED_10:
-            interface.setConfig("speed", "10Mbit/s");
-            interface.setSize(10000000L);
-            break;
-          case SPEED_100:
-            interface.setConfig("speed", "100Mbit/s");
-            interface.setSize(100000000L);
-            break;
-          case SPEED_1000:
-            interface.setConfig("speed", "1Gbit/s");
-            interface.setSize(1000000000L);
-            break;
-        }
-        switch(ecmd.duplex)
-        {
-          case DUPLEX_HALF:
-            interface.setConfig("duplex", "half");
-            break;
-          case DUPLEX_FULL:
-            interface.setConfig("duplex", "full");
-            break;
-        }
-        switch(ecmd.port)
-        {
-          case PORT_TP:
-            interface.setConfig("port", "twisted pair");
-            break;
-          case PORT_AUI:
-            interface.setConfig("port", "AUI");
-            break;
-          case PORT_BNC:
-            interface.setConfig("port", "BNC");
-            break;
-          case PORT_MII:
-            interface.setConfig("port", "MII");
-            break;
-          case PORT_FIBRE:
-            interface.setConfig("port", "fibre");
-            break;
-        }
-        interface.setConfig("autonegotiation", (ecmd.autoneg == AUTONEG_DISABLE) ?  "off" : "on");
-      }
+                switch(ecmd.speed)
+                {
+                    case SPEED_10:
+                        interface.setConfig("speed", "10Mbit/s");
+                        interface.setSize(10000000L);
+                        break;
+                    case SPEED_100:
+                        interface.setConfig("speed", "100Mbit/s");
+                        interface.setSize(100000000L);
+                        break;
+                    case SPEED_1000:
+                        interface.setConfig("speed", "1Gbit/s");
+                        interface.setSize(1000000000L);
+                        break;
+                }
+                switch(ecmd.duplex)
+                {
+                    case DUPLEX_HALF:
+                        interface.setConfig("duplex", "half");
+                        break;
+                    case DUPLEX_FULL:
+                        interface.setConfig("duplex", "full");
+                        break;
+                }
+                switch(ecmd.port)
+                {
+                    case PORT_TP:
+                        interface.setConfig("port", "twisted pair");
+                        break;
+                    case PORT_AUI:
+                        interface.setConfig("port", "AUI");
+                        break;
+                    case PORT_BNC:
+                        interface.setConfig("port", "BNC");
+                        break;
+                    case PORT_MII:
+                        interface.setConfig("port", "MII");
+                        break;
+                    case PORT_FIBRE:
+                        interface.setConfig("port", "fibre");
+                        break;
+                }
+                interface.setConfig("autonegotiation", (ecmd.autoneg == AUTONEG_DISABLE) ? "off" : "on");
+            }
 
-      drvinfo.cmd = ETHTOOL_GDRVINFO;
-      memset(&ifr, 0, sizeof(ifr));
-      strcpy(ifr.ifr_name, interfaces[i].c_str());
-      ifr.ifr_data = (caddr_t) & drvinfo;
-      if (ioctl(fd, SIOCETHTOOL, &ifr) == 0)
-      {
-        interface.setConfig("driver", drvinfo.driver);
-        interface.setConfig("driverversion", drvinfo.version);
-        interface.setConfig("firmware", drvinfo.fw_version);
-        if (interface.getBusInfo() == "")
-          interface.setBusInfo(guessBusInfo(drvinfo.bus_info));
-      }
+            drvinfo.cmd = ETHTOOL_GDRVINFO;
+            memset(&ifr, 0, sizeof(ifr));
+            strcpy(ifr.ifr_name, interfaces[i].c_str());
+            ifr.ifr_data = (caddr_t) & drvinfo;
+            if(ioctl(fd, SIOCETHTOOL, &ifr) == 0)
+            {
+                interface.setConfig("driver", drvinfo.driver);
+                interface.setConfig("driverversion", drvinfo.version);
+                interface.setConfig("firmware", drvinfo.fw_version);
+                if(interface.getBusInfo() == "")
+                    interface.setBusInfo(guessBusInfo(drvinfo.bus_info));
+            }
 
-      if(sysfs::entry::byClass("net", interface.getLogicalName()).hassubdir("bridge"))
-        interface.addCapability("logical", "Logical interface");
+            if(sysfs::entry::byClass("net", interface.getLogicalName()).hassubdir("bridge"))
+                interface.addCapability("logical", "Logical interface");
 
-      if (hwNode * existing = n.findChildByBusInfo(interface.getBusInfo()))
-      {
-        existing->merge(interface);
-        if(interface.getDescription()!="")
-          existing->setDescription(interface.getDescription());
-      }
-      else
-      {
-        existing = n.findChildByLogicalName(interface.getLogicalName());
-        if (existing)
-        {
-          existing->merge(interface);
+            if(hwNode * existing = n.findChildByBusInfo(interface.getBusInfo()))
+            {
+                existing->merge(interface);
+                if(interface.getDescription() != "")
+                    existing->setDescription(interface.getDescription());
+            }
+            else
+            {
+                existing = n.findChildByLogicalName(interface.getLogicalName());
+                if(existing)
+                {
+                    existing->merge(interface);
+                }
+                else
+                {
+                    // we don't care about loopback and "logical" interfaces
+                    if(!interface.isCapable("loopback") &&
+                            !interface.isCapable("logical"))
+                        n.addChild(interface);
+                }
+            }
         }
-        else
-        {
-// we don't care about loopback and "logical" interfaces
-          if (!interface.isCapable("loopback") &&
-            !interface.isCapable("logical"))
-            n.addChild(interface);
-        }
-      }
+
+        close(fd);
+        return true;
     }
-
-    close(fd);
-    return true;
-  }
-  else
-    return false;
+    else
+        return false;
 }

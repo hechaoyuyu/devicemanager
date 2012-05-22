@@ -132,10 +132,12 @@ VENDORS = {
     "YESTON":["YESTON.jpg", "www.yeston.net", "Yeston"],
     #指纹识别
     "UPEK":["AUTHENTEC.jpg", "www.authentec.com", "Authentec"],
+    "AUTHENTEC":["AUTHENTEC.jpg", "www.authentec.com", "Authentec"],
     #闪存产商
     "KINGSTON":["KINGSTON.jpg", "www.kingston.com", "Kingston"],
     "KINGMAX":["KINGMAX.jpg", "www.kingmax.com", "Kingmax"],
     "HYNIX":["HYNIX.jpg", "www.hynix.com", "Hynix"],
+    "HYUNDAI":["HYNIX.jpg", "www.hynix.com", "Hynix"],
     "MICRON":["MICRON.jpg", "www.micron.com", "Micron"],
     "06C1":["ASINT.jpg", "www.asinttech.com", "Asint"],
     "ADATA":["ADATA.jpg", "www.adata.com.cn", "ADATA"],

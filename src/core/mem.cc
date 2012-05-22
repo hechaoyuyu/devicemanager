@@ -21,117 +21,112 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-
 static unsigned long long get_kcore_size()
 {
-  struct stat buf;
+    struct stat buf;
 
-  if (stat("/proc/kcore", &buf) != 0)
-    return 0;
-  else
-    return buf.st_size;
+    if(stat("/proc/kcore", &buf) != 0)
+        return 0;
+    else
+        return buf.st_size;
 }
-
 
 static unsigned long long get_sysconf_size()
 {
-  long pagesize = 0;
-  long physpages = 0;
-  unsigned long long logicalmem = 0;
+    long pagesize = 0;
+    long physpages = 0;
+    unsigned long long logicalmem = 0;
 
-  pagesize = sysconf(_SC_PAGESIZE);
-  physpages = sysconf(_SC_PHYS_PAGES);
-  if ((pagesize > 0) && (physpages > 0))
-    logicalmem =
-      (unsigned long long) pagesize *(unsigned long long) physpages;
+    pagesize = sysconf(_SC_PAGESIZE);
+    physpages = sysconf(_SC_PHYS_PAGES);
+    if((pagesize > 0) && (physpages > 0))
+        logicalmem =
+            (unsigned long long) pagesize * (unsigned long long) physpages;
 
-  return logicalmem;
+    return logicalmem;
 }
-
 
 static unsigned long long count_memorybanks_size(hwNode & n)
 {
-  hwNode *memory = n.getChild("core/memory");
+    hwNode *memory = n.getChild("core/memory");
 
-  if (memory)
-  {
-    unsigned long long size = 0;
+    if(memory)
+    {
+        unsigned long long size = 0;
 
-    memory->claim(true);                          // claim memory and all its children
+        memory->claim(true); // claim memory and all its children
 
-    for (unsigned int i = 0; i < memory->countChildren(); i++)
-      if (memory->getChild(i)->getClass() == hw::memory)
-        size += memory->getChild(i)->getSize();
+        for(unsigned int i = 0; i < memory->countChildren(); i++)
+            if(memory->getChild(i)->getClass() == hw::memory)
+                size += memory->getChild(i)->getSize();
 
-    memory->setSize(size);
-    return size;
-  }
-  else
-    return 0;
+        memory->setSize(size);
+        return size;
+    }
+    else
+        return 0;
 }
-
 
 static void claim_memory(hwNode & n)
 {
-  hwNode *core = n.getChild("core");
+    hwNode *core = n.getChild("core");
 
-  if (core)
-  {
-    for (unsigned int i = 0; i < core->countChildren(); i++)
-      if (core->getChild(i)->getClass() == hw::memory)
-        if(core->getChild(i)->claimed())
-          core->getChild(i)->claim(true);         // claim memory and all its children
-  }
+    if(core)
+    {
+        for(unsigned int i = 0; i < core->countChildren(); i++)
+            if(core->getChild(i)->getClass() == hw::memory)
+                if(core->getChild(i)->claimed())
+                    core->getChild(i)->claim(true); // claim memory and all its children
+    }
 }
-
 
 bool scan_memory(hwNode & n)
 {
-  hwNode *memory = n.getChild("core/memory");
-  unsigned long long logicalmem = 0;
-  unsigned long long kcore = 0;
+    hwNode *memory = n.getChild("core/memory");
+    unsigned long long logicalmem = 0;
+    unsigned long long kcore = 0;
 
-  logicalmem = get_sysconf_size();
-  kcore = get_kcore_size();
-  count_memorybanks_size(n);
-  claim_memory(n);
+    logicalmem = get_sysconf_size();
+    kcore = get_kcore_size();
+    count_memorybanks_size(n);
+    claim_memory(n);
 
-  if (!memory)
-  {
-    hwNode *core = n.getChild("core");
-
-    if (!core)
+    if(!memory)
     {
-      n.addChild(hwNode("core", hw::bus));
-      core = n.getChild("core");
+        hwNode *core = n.getChild("core");
+
+        if(!core)
+        {
+            n.addChild(hwNode("core", hw::bus));
+            core = n.getChild("core");
+        }
+
+        if(core)
+        {
+            core->addChild(hwNode("memory", hw::memory));
+            memory = core->getChild("memory");
+        }
     }
 
-    if (core)
+    if(memory)
     {
-      core->addChild(hwNode("memory", hw::memory));
-      memory = core->getChild("memory");
+        memory->claim();
+        memory->addHint("icon", string("memory"));
+
+        if(memory->getDescription() == "")
+            memory->setDescription("System Memory");
+
+        if(memory->getSize() > logicalmem) // we already have a value
+            return true;
+
+        if((logicalmem == 0)
+                || ((kcore > logicalmem) && (kcore < 2 * logicalmem)))
+            memory->setSize(kcore);
+        else
+            memory->setSize(logicalmem);
+
+        return true;
     }
-  }
 
-  if (memory)
-  {
-    memory->claim();
-    memory->addHint("icon", string("memory"));
-
-    if (memory->getDescription() == "")
-      memory->setDescription("System Memory");
-
-    if (memory->getSize() > logicalmem)           // we already have a value
-      return true;
-
-    if ((logicalmem == 0)
-      || ((kcore > logicalmem) && (kcore < 2 * logicalmem)))
-      memory->setSize(kcore);
-    else
-      memory->setSize(logicalmem);
-
-    return true;
-  }
-
-  return false;
+    return false;
 }

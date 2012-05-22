@@ -188,9 +188,7 @@ def lsmod(name):
 def get_monitor():
     ret = {}
     try:
-	xrandr = get_output('xrandr')
         info = readfile('/var/log/Xorg.0.log')
-
         tmp = re.findall("Monitor name: \s*(\w*)\s*(\w*)", info)
         if tmp:
             if tmp[0][1]:
@@ -204,20 +202,7 @@ def get_monitor():
                 ret["product"] = tmp[0][0] + " " + tmp[0][1]
             if not ret.get("vendor"):
                 ret["vendor"] = tmp[0][0]
-        '''
-        tmp = re.findall("Manufacturer:\s*(\w*)\s*Model:\s*(\w*)", info)
-        if tmp:
-            ret["product"] = tmp[0][0] + " " + tmp[0][1]
-            ret["vendor"] = tmp[0][0]
 
-        tmp = re.findall("Monitor name: \s*(\w*)\s*(\w*)", info)
-        if tmp:
-            if tmp[0][1] and not ret.get("vendor"):
-                ret["vendor"] = tmp[0][0]
-                ret["product"] = tmp[0][0] + " " + tmp[0][1]
-            elif not ret.get("product"):
-                ret["product"] = tmp[0][0]
-        '''
 	tmp = re.findall("Year:\s*(\w*)\s*Week:\s*(\w*)", info)
 	if tmp:
 	    ret["year"] = tmp[0][0]
@@ -250,18 +235,28 @@ def get_monitor():
 	if tmp:
 	    ret["output"] = tmp[0]
 
-	tmp = re.findall("current (\d*) x (\d*)", xrandr)
-	if tmp:
-	    ret["mode"] = tmp[0][0] + "x" + tmp[0][1]
-
 	tmp = re.findall("Integrated Graphics Chipset: (.*)", info)
 	if tmp:
 	    ret["chip"] = tmp[0]
 
+        tmp = re.findall("Chipset: \"(.*)\"", info)
+        if tmp:
+            if not ret.get("chip"):
+                ret["chip"] = tmp[0]
     except:
 	print >> sys.stderr, 'Read Xorg log failed!'
 
     return ret
+
+def get_ratio():
+    try:
+        xrandr = get_output('xrandr')
+        tmp = re.findall("current (\d*) x (\d*)", xrandr)
+	if tmp:
+	    return tmp[0][0] + "x" + tmp[0][1]
+    except:
+        print >> sys.stderr, 'xrandr cmd failed!'
+    return ''
 
 def cpuinfo():
     info = readfile('/proc/cpuinfo')
@@ -405,6 +400,4 @@ def gear_fps():
     except:
         print >> sys.stderr, 'gear_fps  failed!'
     return ret
-
-#print sysbench()
 

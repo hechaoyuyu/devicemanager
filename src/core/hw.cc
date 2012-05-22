@@ -1,4 +1,3 @@
-#define _XOPEN_SOURCE
 #include "hw.h"
 #include "osutils.h"
 #include "options.h"

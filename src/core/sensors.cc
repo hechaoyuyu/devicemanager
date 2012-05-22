@@ -12,7 +12,7 @@ string sensors()
 {
     FILE *sens_conf_file = NULL;
 
-    int chipnum=0, err;
+    int chipnum = 0, err;
     double curvalue;
     char* degree;
     char buffer[100] = {}; //init zero
@@ -20,7 +20,7 @@ string sensors()
 
     const sensors_chip_name *name = NULL;
     err = sensors_init(sens_conf_file);
-    if (err)
+    if(err)
     {
         snprintf(buffer, sizeof(buffer), "sensors_init %s", sensors_strerror(err));
         result = string(buffer);
@@ -29,9 +29,9 @@ string sensors()
 
     degree = degree_sign();
 
-    while ((name = sensors_get_detected_chips(NULL, &chipnum)) != NULL)
+    while((name = sensors_get_detected_chips(NULL, &chipnum)) != NULL)
     {
-        if (name->bus.type != SENSORS_BUS_TYPE_VIRTUAL)
+        if(name->bus.type != SENSORS_BUS_TYPE_VIRTUAL)
         {
             sensors_get_value(name, 0, &curvalue);
             snprintf(buffer, sizeof(buffer), "%.f%sC", curvalue, degree);
@@ -65,7 +65,7 @@ static char *iconv_from_utf8_to_locale(char *string, const char* fallback_string
     charset = nl_langinfo(CODESET);
 
     cd = iconv_open(charset, "UTF-8");
-    if (cd == (iconv_t) - 1)
+    if(cd == (iconv_t) - 1)
         return strdup(fallback_string);
 
     dest_buffer_size = dest_buffer_size_left = buffer_inc;
@@ -73,19 +73,19 @@ static char *iconv_from_utf8_to_locale(char *string, const char* fallback_string
     src_buffer_ptr = src_buffer = strdup(string);
     src_buffer_size = strlen(src_buffer) + 1;
 
-    while (src_buffer_size != 0)
+    while(src_buffer_size != 0)
     {
         nconv = iconv(cd, &src_buffer_ptr, &src_buffer_size, &dest_buffer_ptr, &dest_buffer_size_left);
-        if (nconv == (size_t) - 1)
+        if(nconv == (size_t) - 1)
         {
-            if (errno != E2BIG)
+            if(errno != E2BIG)
                 goto iconv_error;
 
             dest_buffer_size += buffer_inc;
             dest_buffer_size_left = buffer_inc;
             old_dest_buffer = dest_buffer;
             dest_buffer = (char *) realloc(dest_buffer, dest_buffer_size);
-            if (dest_buffer == NULL)
+            if(dest_buffer == NULL)
                 goto iconv_error;
             dest_buffer_ptr = (dest_buffer_ptr - old_dest_buffer) + dest_buffer;
         }
@@ -97,7 +97,7 @@ static char *iconv_from_utf8_to_locale(char *string, const char* fallback_string
 
 iconv_error:
     iconv_close(cd);
-    if (dest_buffer != NULL)
+    if(dest_buffer != NULL)
         free(dest_buffer);
     free(src_buffer);
     return strdup(fallback_string);
