@@ -367,6 +367,9 @@ def super_pi():
 
 def sysbench():
     ret = {}
+    '''off livecd'''
+    if not os.system("mount | grep -w rofs") and not os.system("mount | grep -w aufs"):
+        return ret
     try:
         os.chdir(TARGET_DIR)
         '''生成测试样本'''
