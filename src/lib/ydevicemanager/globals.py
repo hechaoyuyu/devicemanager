@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 
-# Ylmf Device Manager(ydm).
-# Copyright (C) 2011 YLMF, Inc.
-# hechao <hechao@115.com>, 2011.
+# StartOS Device Manager(ydm).
+# Copyright (C) 2012 ivali, Inc.
+# hechao <hechao@ivali.com>, 2011.
 import os
 
 R = 15
@@ -21,8 +21,8 @@ DEFAULT_WIDTH = 900
 DEFAULT_HEIGHT = 666
 
 CONFIG = "/etc/yget.conf"
-DBUS_IFACE = 'com.ylmf.ydm'
-DBUS_PATH = '/com/ylmf/ydm'
+DBUS_IFACE = 'com.startos.ydm'
+DBUS_PATH = '/com/startos/ydm'
 
 HOME = os.path.expanduser("~")
 #HOME = os.environ['HOME']
@@ -136,12 +136,14 @@ VENDORS = {
     #闪存产商
     "KINGSTON":["KINGSTON.jpg", "www.kingston.com", "Kingston"],
     "KINGMAX":["KINGMAX.jpg", "www.kingmax.com", "Kingmax"],
+    "KINGBOX":["KINGBOX.jpg", "www.kingbox.com.tw", "Kingbox"],
     "HYNIX":["HYNIX.jpg", "www.hynix.com", "Hynix"],
     "HYUNDAI":["HYNIX.jpg", "www.hynix.com", "Hynix"],
     "MICRON":["MICRON.jpg", "www.micron.com", "Micron"],
     "06C1":["ASINT.jpg", "www.asinttech.com", "Asint"],
     "ADATA":["ADATA.jpg", "www.adata.com.cn", "ADATA"],
     "ZTE":["ZTE.jpg", "www.zte.com.cn", "ZTE"],
+    "EAGET":["EAGET.jpg", "www.eaget.com.cn", "Eaget"],
     "TEXAS":["TEXAS.jpg", "www.ti.com", "Texas Instruments"],
     #电源产商
     "SMP":["SMP.jpg", "www.simplo.com.tw", "SMP"],

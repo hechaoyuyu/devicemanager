@@ -1,4 +1,4 @@
-#(c) ylmf 2011/6 <hechao @115.com>
+#(c) StartOS 2011/6 <hechao@ivali.com>
 
 PREFIX = /usr
 LIBDIR = $(PREFIX)/lib
@@ -17,9 +17,9 @@ install:
 	$(DESTDIR)$(PREFIX)/share/dbus-1/system-services $(DESTDIR)/etc/dbus-1/system.d \
 	$(DESTDIR)$(PREFIX)/share/polkit-1/actions  $(DESTDIR)$(PREFIX)/share/pixmaps/ \
 	$(DESTDIR)$(PREFIX)/share/applications/
-	-cp -r src/dbus/com.ylmf.ydm.service $(DESTDIR)$(PREFIX)/share/dbus-1/system-services
-	-cp -r src/dbus/com.ylmf.ydm.conf $(DESTDIR)/etc/dbus-1/system.d
-	-cp -r src/dbus/com.ylmf.ydm.policy $(DESTDIR)$(PREFIX)/share/polkit-1/actions
+	-cp -r src/dbus/com.startos.ydm.service $(DESTDIR)$(PREFIX)/share/dbus-1/system-services
+	-cp -r src/dbus/com.startos.ydm.conf $(DESTDIR)/etc/dbus-1/system.d
+	-cp -r src/dbus/com.startos.ydm.policy $(DESTDIR)$(PREFIX)/share/polkit-1/actions
 	-cp -r src/lib/ydevicemanager $(DESTDIR)$(LIBDIR)
 	-cp -r src/share/locale $(DESTDIR)$(PREFIX)/share
 	-cp -r src/share/ydevicemanager $(DESTDIR)$(PREFIX)/share
@@ -36,9 +36,9 @@ install:
 
 # uninstall
 uninstall:
-	rm -vf $(DESTDIR)$(PREFIX)/share/dbus-1/system-services/com.ylmf.ydm.service
-	rm -vf $(DESTDIR)/etc/dbus-1/system.d/com.ylmf.ydm.conf
-	rm -vf $(DESTDIR)$(PREFIX)/share/polkit-1/actions/com.ylmf.ydm.policy
+	rm -vf $(DESTDIR)$(PREFIX)/share/dbus-1/system-services/com.startos.ydm.service
+	rm -vf $(DESTDIR)/etc/dbus-1/system.d/com.startos.ydm.conf
+	rm -vf $(DESTDIR)$(PREFIX)/share/polkit-1/actions/com.startos.ydm.policy
 	rm -rf $(DESTDIR)$(LIBDIR)/ydevicemanager
 	rm -rf $(DESTDIR)$(PREFIX)/share/ydevicemanager
 	rm -rf $(DESTDIR)$(PREFIX)/share/applications/ydm.desktop

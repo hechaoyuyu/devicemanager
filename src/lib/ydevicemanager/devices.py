@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Ylmf Device Manager(ydm).
-# Copyright (C) 2011 YLMF, Inc.
-# hechao <hechao@115.com>, 2011.
+# StartOS Device Manager(ydm).
+# Copyright (C) 2011 ivali, Inc.
+# hechao <hechao@ivali.com>, 2011.
 
 __author__="hechao"
 __date__ ="$2011-12-20 16:36:20$"

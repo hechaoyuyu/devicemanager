@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-# Copyright (C) 2011 YLMF(www.ylmf.org) Ltd.
+# Copyright (C) 2011 StartOS(www.startos.org) Ltd.
 
 # This application is released under the GNU General Public License
 # v3 (or, at your option, any later version). You can find the full
@@ -10,9 +10,9 @@
 # the terms and conditions of this license.
 # Thank you for using free software!
 #
-#(c) Whise 2010,2011 <hechao@115.com>
+#(c) Whise 2010,2011 <hechao@ivali.com>
 #
-# Ylmf Device Manager
+# StartOS Device Manager
 # This is free software made available under the GNU public license.
 
 __author__ = "hechao"

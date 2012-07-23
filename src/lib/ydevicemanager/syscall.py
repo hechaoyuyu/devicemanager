@@ -285,7 +285,7 @@ def open_conf():
             if path:
                 return path.group(1)
     except:
-        return "http://pkg.ylmf.com/packages"
+        return "http://pkg.startos.com/packages"
 
 def cmd_down():
     '''cmd down'''
@@ -367,7 +367,7 @@ def super_pi():
 
 def sysbench():
     ret = {}
-    '''off livecd'''
+    '''判断livecd模式'''
     if not os.system("mount | grep -w rofs") and not os.system("mount | grep -w aufs"):
         return ret
     try:

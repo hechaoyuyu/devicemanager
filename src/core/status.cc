@@ -24,8 +24,8 @@ void status(const char *message)
     }
 
     // create a signal & check for errors
-    msg = dbus_message_new_signal("/com/ylmf/ydm", // object name of the signal
-            "com.ylmf.ydm", // interface name of the signal
+    msg = dbus_message_new_signal("/com/startos/ydm", // object name of the signal
+            "com.startos.ydm", // interface name of the signal
             "changed"); // name of the signal
     if(NULL == msg)
     {

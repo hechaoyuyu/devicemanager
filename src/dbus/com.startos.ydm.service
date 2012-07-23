@@ -1,4 +1,4 @@
 [D-BUS Service]
-Name=com.ylmf.ydm
+Name=com.startos.ydm
 Exec=/usr/lib/ydevicemanager/daemon.py
 User=root

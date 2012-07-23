@@ -4,10 +4,10 @@
  "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
 <policyconfig>
 
-  <vendor>Ylmf Device Manager</vendor>
-  <vendor_url>http://www.ylmf.org</vendor_url>
+  <vendor>StartOS Device Manager</vendor>
+  <vendor_url>http://www.startos.org</vendor_url>
 
-  <action id="com.ylmf.ydm">
+  <action id="com.startos.ydm">
     <description>Install the driver package</description>
     <message>System policy prevents installing the driver package</message>
     <defaults>

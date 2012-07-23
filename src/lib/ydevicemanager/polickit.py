@@ -12,7 +12,7 @@ authority = dbus.Interface(proxy, 'org.freedesktop.PolicyKit1.Authority')
 system_bus_name = bus.get_unique_name()
 print system_bus_name
 subject = ('system-bus-name', {'name' : system_bus_name})
-action_id = 'com.ylmf.ydm'
+action_id = 'com.startos.ydm'
 details = {}
 flags = 1            # AllowUserInteraction flag
 cancellation_id = '' # No cancellation id

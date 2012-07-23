@@ -1,6 +1,6 @@
-# Ylmf Device Manager(ydm).
-# Copyright (C) 2011 YLMF, Inc.
-# hechao <hechao@115.com>, 2011.
+# StartOS Device Manager(ydm).
+# Copyright (C) 2012 ivali, Inc.
+# hechao <hechao@ivali.com>, 2011.
 
 msgid "Device Manager"
 msgstr "设备管理器"
@@ -368,6 +368,9 @@ msgstr "金士顿"
 msgid "Kingmax"
 msgstr "胜创"
 
+msgid "Kingbox"
+msgstr "黑金刚"
+
 msgid "Hynix"
 msgstr "海力士"
 
@@ -382,6 +385,9 @@ msgstr "威刚"
 
 msgid "ZTE"
 msgstr "中兴"
+
+msgid "Eaget"
+msgstr "忆捷"
 
 msgid "Texas Instruments"
 msgstr "德州仪器"

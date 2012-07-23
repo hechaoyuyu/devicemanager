@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import gtk
-from math import pi
-import cairo
-import locale
-from globals import *
 import gettext
+import locale
+from math import pi
+
+import cairo
+from globals import *
+import gtk
 gettext.textdomain('ydm')
 def _(s):
     return gettext.gettext(s)
@@ -28,10 +29,10 @@ class BaseFucn:
 	cr.move_to(x, y + height)
 	cr.line_to(x, y + r)
 
-	cr.arc(x + r, y + r, r, pi, 3 * pi / 2)
-	cr.arc(x + width - r, y + r, r, 3 * pi / 2, 2 * pi)
-	cr.arc(x + width - r, y + height - r, r, 0, pi / 2)
-	cr.arc(x + r, y + height - r, r, pi / 2, pi)
+	cr.arc(x + r, y + r, r, pi, 3*pi/2)
+	cr.arc(x + width - r, y + r, r, 3*pi/2, 2*pi)
+	cr.arc(x + width - r, y + height - r, r, 0, pi/2)
+	cr.arc(x + r, y + height - r, r, pi/2, pi)
 
     def clear_cairo (self, ctx):
 	"""Fills the given cairo.Context with fully transparent white."""
@@ -45,8 +46,8 @@ class BaseFucn:
         '''Drawing lessons from screenlets'''
 	s = shadow_size
 	r = s
-	rr = r+s
-	h = h-r
+	rr = r + s
+	h = h - r
 	if h < 2*r: h = 2*r
 
 	#ctx.save()
@@ -81,27 +82,27 @@ class BaseFucn:
 	if quad == 0: ctx.arc(x, y, to_r, -pi, -pi/2)
 	elif quad == 1: ctx.arc(x, y, to_r, -pi/2, 0)
 	elif quad == 2: ctx.arc(x, y, to_r, pi/2, pi)
-	elif quad == 3: ctx.arc(x , y, to_r, 0, pi/2)
+	elif quad == 3: ctx.arc(x, y, to_r, 0, pi/2)
 	ctx.line_to(x, y)
 	ctx.close_path()
 	ctx.fill()
 
     # side: 0 - left, 1 - right, 2 - top, 3 - bottom
     def draw_side_shadow(self, ctx, x, y, w, h, side, col):
-
-        gradient = None
-	if side == 0:
-		gradient = cairo.LinearGradient(x+w, y, x, y)
-	elif side == 1:
-		gradient = cairo.LinearGradient(x, y, x+w, y)
-	elif side == 2:
-		gradient = cairo.LinearGradient(x, y+h, x, y)
-	elif side == 3:
-		gradient = cairo.LinearGradient(x, y, x, y+h)
-	if gradient:
-		gradient.add_color_stop_rgba(0, col[0], col[1], col[2], col[3])
-		gradient.add_color_stop_rgba(1, col[0], col[1], col[2], 0)
-		ctx.set_source(gradient)
+	
+	gradient = None
+        if side == 0:
+            gradient = cairo.LinearGradient(x + w, y, x, y)
+        elif side == 1:
+            gradient = cairo.LinearGradient(x, y, x + w, y)
+        elif side == 2:
+            gradient = cairo.LinearGradient(x, y + h, x, y)
+        elif side == 3:
+            gradient = cairo.LinearGradient(x, y, x, y + h)
+        if gradient:
+	    gradient.add_color_stop_rgba(0, col[0], col[1], col[2], col[3])
+            gradient.add_color_stop_rgba(1, col[0], col[1], col[2], 0)
+        ctx.set_source(gradient)
 	ctx.rectangle(x, y, w, h)
 	ctx.fill()
         
@@ -161,12 +162,12 @@ class BaseFucn:
 
 	w_icon, h_icon = icon.get_width(), icon.get_height()
 
-	cr.set_source_pixbuf(icon, x + (w_bg - w_icon) / 2, y + (h_bg - h_icon) / 2 - 10)
+	cr.set_source_pixbuf(icon, x + (w_bg - w_icon)/2, y + (h_bg - h_icon)/2 - 10)
 	cr.paint()
 
 	font_size = 14
-	x_font = x + w_bg / 2 - font_size * 2
-	y_font = y + (h_bg + h_icon) / 2 + 8
+	x_font = x + w_bg/2 - font_size*2
+	y_font = y + (h_bg + h_icon)/2 + 8
 	self.draw_font(cr, txt, font_size, 1.0, x_font, y_font)
 
 	if widget.get_child() != None:
@@ -207,12 +208,12 @@ class BaseFucn:
 
 	w_icon, h_icon = icon.get_width(), icon.get_height()
 
-	cr.set_source_pixbuf(icon, x + w_icon / 2, y + (h_bg - h_icon) / 2 + 1)
+	cr.set_source_pixbuf(icon, x + w_icon/2, y + (h_bg - h_icon)/2 + 1)
 	cr.paint()
 
 	font_size = 13
-	x_font = x + w_bg / 2 - font_size * 2 - 2
-	y_font = y + (h_bg + h_icon) / 2 - 7
+	x_font = x + w_bg/2 - font_size*2 - 2
+	y_font = y + (h_bg + h_icon)/2 - 7
 	self.draw_font(cr, txt, font_size, color, x_font, y_font)
 
 	if widget.get_child() != None:
@@ -233,8 +234,8 @@ class BaseFucn:
 	if color[0] == '#':
 	    color = color[1:]
 	(r, g, b) = (int(color[:2], 16),
-		     int(color[2:4], 16),
-		     int(color[4:], 16))
+                     int(color[2:4], 16),
+                     int(color[4:], 16))
 	return (r / 255.0, g / 255.0, b / 255.0)
 
     def expose_button(self, widget, event, n_pixbuf, h_pixbuf, p_pixbuf):
@@ -360,7 +361,7 @@ class BaseFucn:
         
         rect = widget.allocation
         w, h = rect.width, rect.height
-        x, y =  rect.x, rect.y
+        x, y = rect.x, rect.y
 
         pixbuf = gtk.gdk.pixbuf_new_from_file(ICON + "line.png")
 	cr = widget.window.cairo_create()
@@ -414,7 +415,7 @@ class InitWindow(gtk.Window, BaseFucn):
 	# clear context
 	self.clear_cairo(ctx)
         #draw shadow
-        self.draw_shadow(ctx, w - S*2, h - S, S, [0, 0, 0, 0.2])
+        self.draw_shadow(ctx, w - S * 2, h - S, S, [0, 0, 0, 0.2])
 
     def size_allocate_event(self, widget, allocation):
         self.queue_draw()
@@ -487,7 +488,7 @@ class InitWindow(gtk.Window, BaseFucn):
     def resize_window(self, widget, event):
         if self.has_cursor:
             self.window.begin_resize_drag(self.has_cursor, event.button, \
-            int(event.x_root), int(event.y_root), event.time)
+                                          int(event.x_root), int(event.y_root), event.time)
 
 
 class ToolBar(gtk.EventBox, BaseFucn):
@@ -531,7 +532,7 @@ class ToolBar(gtk.EventBox, BaseFucn):
             self.base.align.set_padding(0, 0, 0, 0)
 	else:
             self.base.window.unmaximize()
-            self.base.align.set_padding(2*S, 2*S, 2*S, 2*S)
+            self.base.align.set_padding(2 * S, 2 * S, 2 * S, 2 * S)
 
 	self.has_max = not self.has_max
 
@@ -660,7 +661,7 @@ class StatusBar(gtk.EventBox, BaseFucn):
         align = self.define_align(osname, 0.0, 0.5)
         align.set_padding(0, 0, 0, 18)
 
-        osname.set_markup("<span foreground='#FFFFFF' font_desc='10'>Ylmf OS 5.0</span>")
+        osname.set_markup("<span foreground='#FFFFFF' font_desc='10'>StartOS 5.0</span>")
         state_box.pack_end(align, False, False)
 
 	self.add(state_box)
