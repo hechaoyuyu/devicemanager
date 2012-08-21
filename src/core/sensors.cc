@@ -31,7 +31,7 @@ string sensors()
 
     while((name = sensors_get_detected_chips(NULL, &chipnum)) != NULL)
     {
-        if(name->bus.type != SENSORS_BUS_TYPE_VIRTUAL)
+        if(name->bus.type == SENSORS_BUS_TYPE_ISA)
         {
             sensors_get_value(name, 0, &curvalue);
             snprintf(buffer, sizeof(buffer), "%.f%sC", curvalue, degree);

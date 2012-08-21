@@ -285,8 +285,10 @@ def open_conf():
             if path:
                 return path.group(1)
     except:
-        return "http://pkg.startos.com/packages"
+        print >> sys.stderr, "%s failed!" %CONFIG
 
+    return "http://pkg.startos.org/packages"
+    
 def cmd_down():
     '''cmd down'''
     url = open_conf()
