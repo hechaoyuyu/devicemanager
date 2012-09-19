@@ -23,8 +23,8 @@ install:
 	-cp -r src/lib/ydevicemanager $(DESTDIR)$(LIBDIR)
 	-cp -r src/share/locale $(DESTDIR)$(PREFIX)/share
 	-cp -r src/share/ydevicemanager $(DESTDIR)$(PREFIX)/share
-	-cp -r src/share/pci.ids $(DESTDIR)$(PREFIX)/share
-	-cp -r src/share/usb.ids $(DESTDIR)$(PREFIX)/share
+	#-cp -r src/share/pci.ids $(DESTDIR)$(PREFIX)/share
+	#-cp -r src/share/usb.ids $(DESTDIR)$(PREFIX)/share
 	-install src/bin/ydm $(DESTDIR)$(PREFIX)/bin/
 	-install src/bin/ydm-cmd $(DESTDIR)$(PREFIX)/bin/
 	-cp -r src/bin/ydm.png $(DESTDIR)$(PREFIX)/share/pixmaps/

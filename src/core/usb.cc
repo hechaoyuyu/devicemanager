@@ -24,7 +24,7 @@
 
 #define PROCBUSUSBDEVICES "/proc/bus/usb/devices"
 #define SYSBUSUSBDEVICES "/sys/kernel/debug/usb/devices"
-#define USBID_PATH "/usr/share/usb.ids"
+#define USBID_PATH "/usr/share/hwdata/usb.ids"
 
 #define USB_CLASS_PER_INTERFACE         0         /* for DeviceClass */
 #define USB_CLASS_AUDIO                 1
