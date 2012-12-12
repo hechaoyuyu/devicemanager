@@ -10,7 +10,7 @@ import gobject
 from threading import Thread
 
 from globals import *
-from syscall import xz_file
+from syscall import *
 from widgets import BaseFucn
 from devices import Device
 from dbuscall import init_dbus
@@ -154,7 +154,7 @@ class DeviceBar(gtk.EventBox, BaseFucn):
 	if has_tap == "REPORT":
             self.save_file_as()
         elif has_tap == "SCROT":
-            os.system("gnome-screenshot -w")
+            screenshot()
         elif has_tap == "DET":
             self.base.framebox.foreach(lambda widget: self.base.framebox.remove(widget))
             device_thread = DeviceThread(self.base, has_tap)

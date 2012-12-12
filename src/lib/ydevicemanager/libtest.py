@@ -148,7 +148,7 @@ class TestBar(gtk.EventBox, BaseFucn):
             return True
 
         if has_tap == "SCROT":
-            os.system("gnome-screenshot -w")
+            screenshot()
         elif has_tap == "TEST":
             self.base.framebox.foreach(lambda widget: self.base.framebox.remove(widget))
             driver_thread = TestThread(self.base)

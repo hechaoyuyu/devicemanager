@@ -11,7 +11,7 @@ from globals import *
 from widgets import BaseFucn
 from drivers import Driver
 from dbuscall import init_dbus
-from syscall import environ, get_status, lsmod
+from syscall import *
 
 
 import gettext
@@ -172,7 +172,7 @@ class DriverBar(gtk.EventBox, BaseFucn):
             return True
 
         if has_tap == "SCROT":
-            os.system("gnome-screenshot -w")
+            screenshot()
         elif has_tap == "SCAN":
             self.base.framebox.foreach(lambda widget: self.base.framebox.remove(widget))
             driver_thread = DriverThread(self.base)
@@ -309,7 +309,7 @@ class ActionButton(gtk.Button, BaseFucn):
         '''judge the installation state'''
         self.judge_install(pkgname)
 
-        self.set_size_request(self.n_pixbuf.get_width(), self.n_pixbuf.get_height() + 4)
+        self.set_size_request(self.n_pixbuf.get_width(), self.n_pixbuf.get_height() + 2)
         self.add(self.label)
         self.set_alignment(0.5, 1)
 

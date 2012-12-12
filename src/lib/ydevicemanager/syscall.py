@@ -185,6 +185,12 @@ def lsmod(name):
         return False
     return True
 
+def screenshot():
+    if os.environ.get("DESKTOP_SESSION") == "kde-plasma":
+        os.system("ksnapshot -c")
+    else:
+        os.system("gnome-screenshot -w")
+
 def get_monitor():
     ret = {}
     try:
