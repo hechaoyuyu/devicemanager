@@ -1,1 +1,5 @@
-for testing
+编译时依赖：
+libcairo2-dev libdbus-1-dev libboost-python1.48-dev libsensors4-dev sysbench curl hwdata
+
+编译安装：
+sudo make install

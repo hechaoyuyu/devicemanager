@@ -42,6 +42,7 @@ VENDORS = {
     #CPU产商
     "INTEL":["INTEL.jpg", "www.intel.com", "Intel"],
     "AMD":["AMD.jpg", "www.amd.com", "AMD"],
+    "1022":["AMD.jpg", "www.amd.com", "AMD"],
     "VIMICRO":["VIMICRO.jpg", "www.vimicro.com", "Vimicro"],
     #显卡产商
     "ATI":["ATI.jpg", "www.ati.com", "ATI"],
@@ -74,6 +75,7 @@ VENDORS = {
     "APPLE":["APPLE.jpg", "www.apple.com", "Apple"],
     "DELL":["DELL.jpg", "www.dell.com", "DELL"],
     "FUJITSU":["FUJITSU.jpg", "www.fujitsu.com", "FUJITSU"],
+    "PANASONIC":["PANASONIC.jpg", "www.panasonic.cn", "Panasonic"],
     "SONY":["SONY.jpg", "www.sony.com", "SONY"],
     "IBM":["IBM.jpg", "www.ibm.com", "IBM"],
     #虚拟机

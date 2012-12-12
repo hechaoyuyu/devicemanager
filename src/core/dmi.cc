@@ -407,14 +407,14 @@ static const char *dmi_memory_array_location(u8 num)
     if(num <= 0x0A)
         return memory_array_location[num];
     if(num >= 0xA0 && num < 0xA4)
-        return jp_memory_array_location[num];
+        return jp_memory_array_location[num - 0xA0];
     return "";
 }
 
 static const char *dmi_memory_device_form_factor(u8 num)
 {
     static const char *memory_device_form_factor[] = {
-        "",
+        "", /* 0x00 */
         "",
         "",
         " SIMM",
@@ -429,7 +429,7 @@ static const char *dmi_memory_device_form_factor(u8 num)
         " RIMM",
         " SODIMM",
         " SRIMM",
-        " FB-DIMM",
+        " FB-DIMM",  /* 0x0E */
     };
     if(num > 0x0F)
         return "";

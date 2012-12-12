@@ -173,8 +173,6 @@ typedef struct my_sg_scsi_id
     int unused1; /* probably find a good use, set 0 for now */
     int unused2; /* ditto */
 }
-
-
 My_sg_scsi_id;
 
 typedef struct my_scsi_idlun
@@ -182,8 +180,6 @@ typedef struct my_scsi_idlun
     int mux4;
     int host_unique_id;
 }
-
-
 My_scsi_idlun;
 
 static const char *devices[] = {
@@ -637,8 +633,7 @@ static bool atapi(const hwNode & n)
     return n.isCapable("atapi") && (n.countChildren() == 0);
 }
 
-static bool scan_sg(int sg,
-        hwNode & n)
+static bool scan_sg(int sg, hwNode & n)
 {
     char buffer[20];
     int fd = -1;
@@ -667,7 +662,6 @@ static bool scan_sg(int sg,
         return true; // we failed to get info but still hope we can continue
     }
 
-    emulated = 0;
     ioctl(fd, SG_EMULATED_HOST, &emulated);
 
     host = host_logicalname(m_id.host_no);

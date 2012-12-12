@@ -1,4 +1,8 @@
 #include "super.h"
+/*矩形积分法示π
+ * f(x) = 4/(1+x*x)
+ * pi = 1/N(f((i-0.5)/N)+...)
+ */
 
 double super_pi()
 {
@@ -10,9 +14,9 @@ double super_pi()
     step = 1.0 / NUM;
 
 #pragma omp parallel for reduction(+:sum) private(x)
-    for(i = 0; i < NUM; i++)
+    for(i = 1; i < NUM; i++)
     {
-        x = (i + 0.5) * step;
+        x = (i - 0.5) * step;
         sum += 4.0 / (1.0 + x * x);
     }
     pi = step*sum;

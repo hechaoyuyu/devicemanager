@@ -2,6 +2,10 @@
 #include <sys/time.h>
 #include "stream.h"
 
+/*
+ * STREAM
+ */
+
 double stream_triad()
 {
     register int j, k;
