@@ -147,6 +147,7 @@ VENDORS = {
     "ZTE":["ZTE.jpg", "www.zte.com.cn", "ZTE"],
     "EAGET":["EAGET.jpg", "www.eaget.com.cn", "Eaget"],
     "TEXAS":["TEXAS.jpg", "www.ti.com", "Texas Instruments"],
+    "MOTOROLA":["MOTOROLA.jpg", "www.motorola.com.cn", "Motorola"],
     #电源产商
     "SMP":["SMP.jpg", "www.simplo.com.tw", "SMP"],
     #BIOS产商

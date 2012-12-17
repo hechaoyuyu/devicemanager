@@ -48,7 +48,8 @@ def user():
 
 def os_version():
     name, version, code = platform.dist()
-    return version + ' ' + code
+    #return version + ' ' + code
+    return name, version, code
 
 def kernel():
     return platform.release(), platform.machine()

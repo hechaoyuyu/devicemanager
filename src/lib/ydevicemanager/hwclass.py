@@ -234,7 +234,7 @@ class System(Computer):
 	if minute:
 	    runtime += minute + _("minute")
         bodys.append((_("Runtime"), runtime))
-        bodys.append((_("System version"), os_version()))
+        bodys.append((_("System version"), os_version()[1]+' '+os_version()[2]))
         bodys.append((_("Install time"), install_time()))
 
 	release, machine = kernel()
