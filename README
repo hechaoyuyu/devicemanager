@@ -1,5 +1,8 @@
 编译时依赖：
-libcairo2-dev libdbus-1-dev libboost-python1.48-dev libsensors4-dev sysbench curl hwdata
+libcairo2-dev libdbus-1-dev libboost-python1.48-dev libsensors4-dev
+
+运行时依赖：
+sysbench curl hwdata
 
 编译安装：
 sudo make install
