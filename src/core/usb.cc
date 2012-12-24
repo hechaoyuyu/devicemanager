@@ -343,6 +343,9 @@ bool scan_usb(hwNode & n)
     unsigned ifnum, alt, numeps;
     char driver[80 + 1];
 
+    if (!exists(SYSBUSUSBDEVICES) && !exists(PROCBUSUSBDEVICES))
+        return false;
+        
     vector < string > filenames;
     splitlines(USBID_PATH, filenames, ':');
     for(int i = filenames.size() - 1; i >= 0; i--)

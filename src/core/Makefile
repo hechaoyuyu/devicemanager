@@ -6,7 +6,7 @@ CXXFLAGS ?= -O3 -Wall
 
 ##python2.6 or lower version##
 #PYTHON_INC = $(shell python -c 'from distutils.sysconfig import get_python_inc;print get_python_inc()')
-#INCLUDES=-I$(PYTHON_INC) `pkg-config --cflags dbus-1`
+#INCLUDES=-I$(PYTHON_INC) `pkg-config --cflags dbus-1 cairo`
 INCLUDES = `pkg-config --cflags python dbus-1 cairo`
 LIBS = -lboost_python -lsensors -ldbus-1 -lcairo -fopenmp
 
