@@ -150,6 +150,7 @@ VENDORS = {
     "MOTOROLA":["MOTOROLA.jpg", "www.motorola.com.cn", "Motorola"],
     #电源产商
     "SMP":["SMP.jpg", "www.simplo.com.tw", "SMP"],
+    "SIMPLO":["SMP.jpg", "www.simplo.com.tw", "SMP"],
     #BIOS产商
     "AMERICAN":["AMI.jpg", "www.ami.com", "AMI"],
     "AWARD":["PHOENIX.jpg", "www.award-bios.com", "Phoenix"],
