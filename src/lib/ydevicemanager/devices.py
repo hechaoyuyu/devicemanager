@@ -163,7 +163,7 @@ class Device:
                 self.businfo, self.logicalname, self.config, self.capability)
 		self.dev_type.setdefault((7, "cdrom"), []).append(cdrom)
 
-            elif self.attr["class"] == "storage":
+            elif self.attr["class"] == "storage" and self.attr["handle"]:
                 storage = Storage(self.description, self.product, self.vendor, self.version, \
                 self.businfo, self.logicalname, self.serial, self.config, self.capability)
 		self.dev_type.setdefault((8, "storage"), []).append(storage)

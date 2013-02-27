@@ -206,8 +206,6 @@ typedef enum
     pcisubvendor,
     pciprogif
 }
-
-
 catalog;
 
 struct pci_dev

@@ -53,13 +53,23 @@ class DriverPage(gtk.VBox):
         else:
             drivers.get_drivers()
             dri_list = drivers.dri_list
-            
+
+            #judgment ncard+icard (temporary)
+            icard = ncard = False
+            for key in base.pcid:
+                if base.pcid[key] == "display":
+                    id = key.split(":")[0]
+                    if id == "8086":
+                        icard = True
+                    elif id == "10DE":
+                        ncard = True
+
             #Tip bar
-            tipbar = DriverBar(dri_list, base)
+            tipbar = DriverBar(dri_list, base, icard, ncard)
             self.pack_start(tipbar, False)
 
             #content view
-            contentview = DriverContent(dri_list, base)
+            contentview = DriverContent(dri_list, base, icard, ncard)
             self.pack_start(contentview)
 
         self.show_all()
@@ -116,7 +126,7 @@ class WarnPage(gtk.EventBox, BaseFucn):
 
 class DriverBar(gtk.EventBox, BaseFucn):
 
-    def __init__(self, dri_list, base):
+    def __init__(self, dri_list, base, icard, ncard):
 	gtk.EventBox.__init__(self)
 	self.connect("expose_event", self.expose_ebox, ICON + "tip.png")
         self.base = base
@@ -127,7 +137,7 @@ class DriverBar(gtk.EventBox, BaseFucn):
         self.add(align)
         
 	tip_label = gtk.Label()
-        if len(dri_list) == 0:
+        if (len(dri_list) == 0) or (icard and ncard):
             tip_label.set_markup("<span font_desc='10'>%s</span>" % _("You have installed the hardware required for driver!"))
         else:
             tip_label.set_markup(_("Has detected that you have <span color='red' font_desc='10'>%s</span> hardware can be upgraded or installed driver!") % len(dri_list))
@@ -182,18 +192,20 @@ class DriverBar(gtk.EventBox, BaseFucn):
 
 class DriverContent(gtk.ScrolledWindow, BaseFucn):
 
-    def __init__(self, dri_list, base):
+    def __init__(self, dri_list, base, icard, ncard):
         gtk.ScrolledWindow.__init__(self)
 	self.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 	self.set_shadow_type(gtk.SHADOW_NONE)
 
         vbox = gtk.VBox()
-        if len(dri_list) == 0:
+        if (len(dri_list) == 0) or (icard and ncard):
             overpage = self.over_page()
             vbox.pack_start(overpage)
 
-        for key in dri_list.keys():
+        for key in dri_list:
             for dri_tuple in list(set(dri_list[key])):
+                if icard and ncard:
+                    continue
                 id = base.pcid.get(key)
                 if id:
                     dri_item = DriverItem(id, dri_tuple)

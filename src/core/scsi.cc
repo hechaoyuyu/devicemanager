@@ -723,6 +723,7 @@ static bool scan_sg(int sg, hwNode & n)
         scan_disk(device);
 
     memset(slot_name, 0, sizeof(slot_name));
+    //这个地方在3.4以上的内核中有问题，slot_name会变成ata1，而不是0000:00:1f.2之类的
     if(ioctl(fd, SCSI_IOCTL_GET_PCI, slot_name) >= 0)
     {
         parent = n.findChildByBusInfo(guessBusInfo(hw::strip(slot_name)));
@@ -767,9 +768,8 @@ static bool scan_sg(int sg, hwNode & n)
         parent->addCapability("emulated", "Emulated device");
     }
     parent->addChild(device);
-
+    
     close(fd);
-
     return true;
 }
 
