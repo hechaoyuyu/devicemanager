@@ -7,7 +7,7 @@ from math import pi
 
 import cairo
 from globals import *
-from syscall import os_version
+from syscall import os_version, get_ip
 import gtk
 gettext.textdomain('ydm')
 def _(s):
@@ -662,7 +662,9 @@ class StatusBar(gtk.EventBox, BaseFucn):
         align = self.define_align(osname, 0.0, 0.5)
         align.set_padding(0, 0, 0, 18)
 
-        osname.set_markup("<span foreground='#FFFFFF' font_desc='10'>%s</span>" %(os_version()[0]+' '+os_version()[1]))
+        ip = get_ip()
+        version = ip if ip else os_version()[0]+' '+os_version()[1]
+        osname.set_markup("<span foreground='#FFFFFF' font_desc='10'>%s</span>" %version)
         state_box.pack_end(align, False, False)
 
 	self.add(state_box)

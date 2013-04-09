@@ -412,4 +412,17 @@ def gear_fps():
     except:
         print >> sys.stderr, 'gear_fps  failed!'
     return ret
+    
+def get_ip():
+    ret = ''
+    url = "http://iframe.ip138.com/ic.asp"
+    try:
+        import urllib2
+	fp = urllib2.urlopen(url, timeout=5)
+        souce = fp.read().decode("GB2312")
+        fp.close()
+        ret = re.findall("<center>(.*)</center>", souce)[0].encode("UTF-8")
+    except:
+        print >> sys.stderr, 'get_ip failed!'
+    return ret
 
