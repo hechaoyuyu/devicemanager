@@ -86,7 +86,8 @@ VENDORS = {
     "3COM":["3COM.jpg", "www.3com.com", "3COM"],
     "D-LINK":["D-LINK.jpg", "www.dlink.com.tw", "D-LINK"],
     "RALINK":["RALINK.jpg", "www.ralinktech.com", "Ralink"],
-    "ATHEROS":["ATHEROS.jpg", "www.atheros.com", "Atheros"],
+    "168C":["ATHEROS.jpg", "www.atheros.com", "Atheros"],
+    "1969":["ATHEROS.jpg", "www.atheros.com", "Atheros"],
     "MARVELL":["MARVELL.jpg", "www.marvell.com", "Marvell"],
     "BROADCOM":["BROADCOM.jpg", "www.broadcom.com", "Broadcom"],
     #硬盘产商
@@ -154,5 +155,7 @@ VENDORS = {
     #BIOS产商
     "AMERICAN":["AMI.jpg", "www.ami.com", "AMI"],
     "AWARD":["PHOENIX.jpg", "www.award-bios.com", "Phoenix"],
-    "PHOENIX":["PHOENIX.jpg", "www.phoenix.com", "Phoenix"]
+    "PHOENIX":["PHOENIX.jpg", "www.phoenix.com", "Phoenix"],
+    #Android
+    "ANDROID":["ANDROID.jpg", "www.android.com", "Android"]
 }
